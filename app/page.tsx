@@ -683,18 +683,23 @@ export default function Home() {
     MARQUEE
 =================================================== */}
 
+{/* ===================================================
+    MARQUEE
+=================================================== */}
+
 {marqueeVisible && marqueeText && (
   <div className="marquee-wrapper mt-20">
     <div className="marquee-track">
-      <div className="marquee-group">
-        <span className="marquee-item">{marqueeText}</span>
-        <span className="marquee-dot">•</span>
-      </div>
-
-      <div className="marquee-group" aria-hidden="true">
-        <span className="marquee-item">{marqueeText}</span>
-        <span className="marquee-dot">•</span>
-      </div>
+      {Array.from({ length: 8 }).map((_, index) => (
+        <div
+          className="marquee-group"
+          key={index}
+          aria-hidden={index >= 4}
+        >
+          <span className="marquee-item">{marqueeText}</span>
+          <span className="marquee-dot">•</span>
+        </div>
+      ))}
     </div>
   </div>
 )}
