@@ -84,6 +84,7 @@ export default async function AdminPage() {
 
   let appointments: Appointment[] = [];
   let activeServicesCount = 0;
+  let portfolioCount = 0;
 
   try {
     const appointmentData =
@@ -103,6 +104,15 @@ export default async function AdminPage() {
         .all();
 
     activeServicesCount = activeServices.length;
+
+    const activePortfolio =
+      await db.orm.public.Portfolio
+        .where({
+          isActive: true,
+        })
+        .all();
+
+    portfolioCount = activePortfolio.length;
   } catch (error) {
     console.error(
       "Admin dashboard data error:",
@@ -193,16 +203,14 @@ export default async function AdminPage() {
             >
               Appointments
             </Link>
-
             {/* PORTFOLIO */}
 
-            <button
-              type="button"
-              disabled
-              className="w-full cursor-not-allowed rounded-lg px-4 py-3 text-left text-sm text-white/25"
+            <Link
+              href="/admin/portfolio"
+              className="block w-full rounded-lg px-4 py-3 text-left text-sm text-white/55 transition hover:bg-white/5 hover:text-white"
             >
               Portfolio
-            </button>
+            </Link>
 
             {/* SERVICES */}
 
@@ -212,26 +220,14 @@ export default async function AdminPage() {
             >
               Services
             </Link>
-
             {/* MARQUEE */}
 
-            <button
-              type="button"
-              disabled
-              className="w-full cursor-not-allowed rounded-lg px-4 py-3 text-left text-sm text-white/25"
+            <Link
+              href="/admin/marquee"
+              className="block w-full rounded-lg px-4 py-3 text-left text-sm text-white/55 transition hover:bg-white/5 hover:text-white"
             >
               Marquee
-            </button>
-
-            {/* SETTINGS */}
-
-            <button
-              type="button"
-              disabled
-              className="w-full cursor-not-allowed rounded-lg px-4 py-3 text-left text-sm text-white/25"
-            >
-              Settings
-            </button>
+            </Link>
 
           </div>
 
@@ -346,36 +342,34 @@ export default async function AdminPage() {
               </p>
 
             </Link>
+              {/* PORTFOLIO */}
 
-            {/* PORTFOLIO */}
+              <Link
+                href="/admin/portfolio"
+                className="group rounded-xl border border-white/10 bg-[#080808] p-6 text-left transition duration-300 hover:border-[#9c810c]/50 hover:bg-[#0d0d0d]"
+              >
 
-            <button
-              type="button"
-              disabled
-              className="group cursor-not-allowed rounded-xl border border-white/10 bg-[#080808] p-6 text-left opacity-70"
-            >
+                <div className="flex items-center justify-between">
 
-              <div className="flex items-center justify-between">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-[#9c810c]/10 text-xl text-[#9c810c]">
+                    🎬
+                  </div>
 
-                <p className="text-xs uppercase tracking-[0.2em] text-white/35">
-                  Portfolio
+                  <span className="text-white/20 transition group-hover:translate-x-1">
+                    →
+                  </span>
+
+                </div>
+
+                <h4 className="mt-6 font-semibold">
+                  Manage Portfolio
+                </h4>
+
+                <p className="mt-2 text-sm leading-6 text-white/35">
+                  Add or remove bridal photos and videos.
                 </p>
 
-                <span className="text-white/20">
-                  →
-                </span>
-
-              </div>
-
-              <p className="mt-5 text-4xl font-bold text-[#9c810c]">
-                0
-              </p>
-
-              <p className="mt-2 text-xs text-white/30">
-                Photos &amp; videos
-              </p>
-
-            </button>
+              </Link>
 
             {/* SERVICES */}
 
@@ -405,36 +399,6 @@ export default async function AdminPage() {
               </p>
 
             </Link>
-
-            {/* MESSAGES */}
-
-            <button
-              type="button"
-              disabled
-              className="group cursor-not-allowed rounded-xl border border-white/10 bg-[#080808] p-6 text-left opacity-70"
-            >
-
-              <div className="flex items-center justify-between">
-
-                <p className="text-xs uppercase tracking-[0.2em] text-white/35">
-                  Messages
-                </p>
-
-                <span className="text-white/20">
-                  →
-                </span>
-
-              </div>
-
-              <p className="mt-5 text-4xl font-bold text-[#9c810c]">
-                0
-              </p>
-
-              <p className="mt-2 text-xs text-white/30">
-                New enquiries
-              </p>
-
-            </button>
 
           </div>
 
@@ -641,13 +605,11 @@ export default async function AdminPage() {
                 </p>
 
               </Link>
-
               {/* MARQUEE */}
 
-              <button
-                type="button"
-                disabled
-                className="group cursor-not-allowed rounded-xl border border-white/10 bg-[#080808] p-6 text-left opacity-60"
+              <Link
+                href="/admin/marquee"
+                className="group rounded-xl border border-white/10 bg-[#080808] p-6 text-left transition duration-300 hover:border-[#9c810c]/50 hover:bg-[#0d0d0d]"
               >
 
                 <div className="flex items-center justify-between">
@@ -656,7 +618,7 @@ export default async function AdminPage() {
                     📢
                   </div>
 
-                  <span className="text-white/20">
+                  <span className="text-white/20 transition group-hover:translate-x-1">
                     →
                   </span>
 
@@ -670,45 +632,7 @@ export default async function AdminPage() {
                   Change the announcement displayed on the website.
                 </p>
 
-                <p className="mt-3 text-[9px] uppercase tracking-[0.2em] text-[#9c810c]/60">
-                  Coming soon
-                </p>
-
-              </button>
-
-              {/* SETTINGS */}
-
-              <button
-                type="button"
-                disabled
-                className="group cursor-not-allowed rounded-xl border border-white/10 bg-[#080808] p-6 text-left opacity-60"
-              >
-
-                <div className="flex items-center justify-between">
-
-                  <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-[#9c810c]/10 text-xl text-[#9c810c]">
-                    ⚙️
-                  </div>
-
-                  <span className="text-white/20">
-                    →
-                  </span>
-
-                </div>
-
-                <h4 className="mt-6 font-semibold">
-                  Website Settings
-                </h4>
-
-                <p className="mt-2 text-sm leading-6 text-white/35">
-                  Manage basic website configuration.
-                </p>
-
-                <p className="mt-3 text-[9px] uppercase tracking-[0.2em] text-[#9c810c]/60">
-                  Coming soon
-                </p>
-
-              </button>
+              </Link>
 
             </div>
 
