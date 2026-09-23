@@ -1,0 +1,53 @@
+// use prisma-8
+
+model Admin {
+  id           Int      @id @default(autoincrement())
+  username     String   @unique
+  passwordHash String
+  name         String?
+  createdAt    TimestamptzString @default(now())
+  updatedAt    temporal.updatedAtString()
+}
+
+model Service {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String?
+  price       String?
+  imageUrl    String?
+  category    String?
+  isActive    Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  createdAt   TimestamptzString @default(now())
+  updatedAt   temporal.updatedAtString()
+}
+
+model Marquee {
+  id        Int      @id @default(autoincrement())
+  text      String
+  isActive  Boolean  @default(true)
+  updatedAt temporal.updatedAtString()
+}
+
+model Appointment {
+  id              Int      @id @default(autoincrement())
+  name            String
+  phone           String
+  service         String
+  appointmentDate String
+  appointmentTime String
+  message         String?
+  status          String   @default("PENDING")
+  createdAt       TimestamptzString @default(now())
+  updatedAt       temporal.updatedAtString()
+}
+
+model Portfolio {
+  id        Int      @id @default(autoincrement())
+  type      String
+  url       String
+  isActive  Boolean  @default(true)
+  sortOrder Int      @default(0)
+  createdAt TimestamptzString @default(now())
+  updatedAt temporal.updatedAtString()
+}

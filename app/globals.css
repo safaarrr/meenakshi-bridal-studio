@@ -1,0 +1,401 @@
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap");
+
+@import "tailwindcss";
+
+/* =========================================================
+   ROOT
+========================================================= */
+
+:root {
+  --background: #000000;
+  --foreground: #ffffff;
+  --yellow: #9c810c;
+
+  --font-heading: "Playfair Display", serif;
+  --font-body: "Montserrat", sans-serif;
+}
+
+/* =========================================================
+   GLOBAL
+========================================================= */
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: #000000;
+  color: var(--foreground);
+  font-family: var(--font-body);
+}
+
+/* =========================================================
+   FONTS
+========================================================= */
+
+.heading-font {
+  font-family: var(--font-heading);
+}
+
+.brand-font {
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+}
+
+/* =========================================================
+   SELECTION
+========================================================= */
+
+::selection {
+  background: #9c810c;
+  color: #000000;
+}
+
+/* =========================================================
+   SCROLLBAR
+========================================================= */
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #000000;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #9c810c;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #ffffff;
+}
+
+/* =========================================================
+   MARQUEE
+========================================================= */
+
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee 10s linear infinite;
+  will-change: transform;
+}
+.marquee-track:hover {
+  animation-play-state: paused;
+}
+.marquee-item {
+  flex-shrink: 0;
+}
+
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+/* =========================================================
+   HERO ANIMATIONS
+========================================================= */
+
+.hero-fade {
+  animation: heroFade 1s ease-out both;
+}
+
+.hero-fade-delay-1 {
+  animation: heroFade 1s ease-out 0.2s both;
+}
+
+.hero-fade-delay-2 {
+  animation: heroFade 1s ease-out 0.4s both;
+}
+
+.hero-fade-delay-3 {
+  animation: heroFade 1s ease-out 0.6s both;
+}
+
+.hero-circle {
+  animation: heroRotate 30s linear infinite;
+}
+
+.hero-glow {
+  animation: heroGlow 5s ease-in-out infinite;
+}
+
+@keyframes heroFade {
+  from {
+    opacity: 0;
+    transform: translateY(25px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes heroRotate {
+  from {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+
+  to {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+
+@keyframes heroGlow {
+  0%,
+  100% {
+    opacity: 0.5;
+    transform: translate(-50%, -50%) scale(1);
+  }
+
+  50% {
+    opacity: 0.8;
+    transform: translate(-50%, -50%) scale(1.08);
+  }
+}
+
+/* =========================================================
+   PREMIUM MOVING BACKGROUND
+========================================================= */
+
+.particle-layer {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  pointer-events: none;
+
+  z-index: 0;
+}
+
+/* Moving gold glow */
+
+.particle-layer::before {
+  content: "";
+  position: absolute;
+
+  width: 500px;
+  height: 500px;
+
+  left: -200px;
+  top: 15%;
+
+  border-radius: 50%;
+
+  background: radial-gradient(
+    circle,
+    rgba(156, 129, 12, 0.18) 0%,
+    rgba(156, 129, 12, 0.07) 35%,
+    transparent 70%
+  );
+
+  filter: blur(25px);
+
+  animation: goldGlowLeft 15s ease-in-out infinite alternate;
+}
+
+/* Second moving gold glow */
+
+.particle-layer::after {
+  content: "";
+  position: absolute;
+
+  width: 550px;
+  height: 550px;
+
+  right: -220px;
+  bottom: 5%;
+
+  border-radius: 50%;
+
+  background: radial-gradient(
+    circle,
+    rgba(156, 129, 12, 0.15) 0%,
+    rgba(156, 129, 12, 0.05) 35%,
+    transparent 70%
+  );
+
+  filter: blur(30px);
+
+  animation: goldGlowRight 18s ease-in-out infinite alternate;
+}
+
+/* =========================================================
+   GOLD GLOW MOVEMENT
+========================================================= */
+
+@keyframes goldGlowLeft {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+
+  50% {
+    transform: translate(250px, 100px) scale(1.2);
+  }
+
+  100% {
+    transform: translate(100px, 350px) scale(0.85);
+  }
+}
+
+@keyframes goldGlowRight {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+
+  50% {
+    transform: translate(-250px, -150px) scale(1.2);
+  }
+
+  100% {
+    transform: translate(-100px, -350px) scale(0.85);
+  }
+}
+
+/* =========================================================
+   FLOATING PARTICLES
+========================================================= */
+
+.particle {
+  position: absolute;
+
+  width: 4px;
+  height: 4px;
+
+  border-radius: 50%;
+
+  background: #9c810c;
+
+  box-shadow:
+    0 0 8px rgba(156, 129, 12, 0.9),
+    0 0 20px rgba(156, 129, 12, 0.5);
+
+  opacity: 0.7;
+
+  animation: floatingParticle 8s ease-in-out infinite;
+}
+
+/* Particle positions */
+
+.particle:nth-child(1) {
+  left: 8%;
+  top: 25%;
+  animation-delay: 0s;
+}
+
+.particle:nth-child(2) {
+  left: 18%;
+  top: 65%;
+  animation-delay: 1s;
+}
+
+.particle:nth-child(3) {
+  left: 30%;
+  top: 15%;
+  animation-delay: 2s;
+}
+
+.particle:nth-child(4) {
+  left: 42%;
+  top: 78%;
+  animation-delay: 3s;
+}
+
+.particle:nth-child(5) {
+  left: 55%;
+  top: 30%;
+  animation-delay: 4s;
+}
+
+.particle:nth-child(6) {
+  left: 68%;
+  top: 70%;
+  animation-delay: 5s;
+}
+
+.particle:nth-child(7) {
+  left: 78%;
+  top: 18%;
+  animation-delay: 6s;
+}
+
+.particle:nth-child(8) {
+  left: 88%;
+  top: 55%;
+  animation-delay: 7s;
+}
+
+.particle:nth-child(9) {
+  left: 12%;
+  top: 85%;
+  animation-delay: 3.5s;
+}
+
+.particle:nth-child(10) {
+  left: 92%;
+  top: 82%;
+  animation-delay: 5.5s;
+}
+
+@keyframes floatingParticle {
+  0% {
+    transform: translate(0, 0) scale(0.7);
+    opacity: 0.2;
+  }
+
+  25% {
+    transform: translate(30px, -40px) scale(1);
+    opacity: 0.8;
+  }
+
+  50% {
+    transform: translate(-20px, -80px) scale(1.4);
+    opacity: 0.4;
+  }
+
+  75% {
+    transform: translate(35px, -40px) scale(1);
+    opacity: 0.8;
+  }
+
+  100% {
+    transform: translate(0, 0) scale(0.7);
+    opacity: 0.2;
+  }
+}
+/* =========================================================
+   REDUCED MOTION
+========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-fade,
+  .hero-fade-delay-1,
+  .hero-fade-delay-2,
+  .hero-fade-delay-3,
+  .hero-circle,
+  .hero-glow,
+  .marquee-track,
+  body::before,
+  body::after,
+  .particle {
+    animation: none;
+  }
+
+  html {
+    scroll-behavior: auto;
+  }
+}
