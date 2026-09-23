@@ -81,18 +81,37 @@ body {
    MARQUEE
 ========================================================= */
 
+.marquee-wrapper {
+  width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
 .marquee-track {
   display: flex;
   width: max-content;
   animation: marquee 10s linear infinite;
   will-change: transform;
 }
-.marquee-track:hover {
-  animation-play-state: paused;
+
+.marquee-group {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
 }
+
 .marquee-item {
   flex-shrink: 0;
 }
+
+.marquee-dot {
+  flex-shrink: 0;
+  margin: 0 28px;
+}
+.marquee-track:hover {
+  animation-play-state: paused;
+}
+
 
 @keyframes marquee {
   from {
