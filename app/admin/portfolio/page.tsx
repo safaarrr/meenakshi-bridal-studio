@@ -13,49 +13,36 @@ export default async function PortfolioPage() {
     redirect("/admin/login");
   }
 
+  const navLink =
+    "block w-full rounded-lg px-4 py-3 text-sm text-white/55 transition hover:bg-white/5 hover:text-white";
+
   return (
     <main className="min-h-screen bg-black text-white">
       {/* SIDEBAR */}
       <aside className="fixed left-0 top-0 hidden h-screen w-64 border-r border-white/10 bg-[#080808] lg:block">
-        {/* Logo */}
         <div className="border-b border-white/10 p-6">
           <Link href="/" className="block">
             <h1 className="text-xl font-bold tracking-[0.18em] text-[#9c810c]">
               MEENAKSHI
             </h1>
-
             <p className="mt-1 text-[9px] tracking-[0.25em] text-white/40">
               ADMIN PANEL
             </p>
           </Link>
         </div>
 
-        {/* Navigation */}
         <nav className="p-4">
           <p className="mb-4 px-3 text-[10px] font-semibold uppercase tracking-[0.3em] text-white/30">
             Management
           </p>
 
           <div className="space-y-1">
-            <Link
-              href="/admin"
-              className="block w-full rounded-lg px-4 py-3 text-sm text-white/55 transition hover:bg-white/5 hover:text-white"
-            >
+            <Link href="/admin" className={navLink}>
               Dashboard
             </Link>
 
-            <Link
-              href="/admin/appointments"
-              className="block w-full rounded-lg px-4 py-3 text-sm text-white/55 transition hover:bg-white/5 hover:text-white"
-            >
+            <Link href="/admin/appointments" className={navLink}>
               Appointments
-            </Link>
-
-            <Link
-              href="/admin/services"
-              className="block w-full rounded-lg px-4 py-3 text-sm text-white/55 transition hover:bg-white/5 hover:text-white"
-            >
-              Services
             </Link>
 
             <Link
@@ -65,30 +52,22 @@ export default async function PortfolioPage() {
               Portfolio
             </Link>
 
-            <Link
-              href="/admin/marquee"
-              className="block w-full rounded-lg px-4 py-3 text-sm text-white/55 transition hover:bg-white/5 hover:text-white"
-            >
-              Marquee
+            <Link href="/admin/services" className={navLink}>
+              Services
             </Link>
 
-            <button
-              type="button"
-              disabled
-              className="w-full cursor-not-allowed rounded-lg px-4 py-3 text-left text-sm text-white/25"
-            >
-              Settings
-            </button>
+            <Link href="/admin/marquee" className={navLink}>
+              Marquee
+            </Link>
           </div>
         </nav>
 
-        {/* Bottom */}
         <div className="absolute bottom-0 left-0 w-full border-t border-white/10 p-4">
           <Link
             href="/"
             className="block rounded-lg px-4 py-3 text-sm text-white/45 transition hover:bg-white/5 hover:text-white"
           >
-            ← Back to Website
+            ← View Website
           </Link>
         </div>
       </aside>
@@ -100,7 +79,6 @@ export default async function PortfolioPage() {
             <p className="text-lg font-bold tracking-[0.15em] text-[#9c810c]">
               MEENAKSHI
             </p>
-
             <p className="text-[8px] tracking-[0.25em] text-white/40">
               ADMIN PANEL
             </p>
@@ -118,19 +96,28 @@ export default async function PortfolioPage() {
       {/* MAIN */}
       <section className="min-h-screen lg:ml-64">
         <div className="mx-auto max-w-7xl px-5 py-8 sm:px-8 lg:px-10 lg:py-10">
-          <div className="mb-8">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.3em] text-[#9c810c]">
-              Management
-            </p>
+          <div className="mb-8 flex items-start justify-between gap-6">
+            <div>
+              <p className="text-[10px] font-semibold uppercase tracking-[0.3em] text-[#9c810c]">
+                Management
+              </p>
 
-            <h2 className="mt-2 text-3xl font-semibold text-white sm:text-4xl">
-              Portfolio
-            </h2>
+              <h2 className="mt-2 text-3xl font-semibold text-white sm:text-4xl">
+                Portfolio
+              </h2>
 
-            <p className="mt-3 max-w-2xl text-sm leading-6 text-white/40">
-              Add and manage the photos and videos displayed on the
-              Meenakshi Bridal Studio website.
-            </p>
+              <p className="mt-3 max-w-2xl text-sm leading-6 text-white/40">
+                Add and manage the photos and videos displayed on the
+                Meenakshi Bridal Studio website.
+              </p>
+            </div>
+
+            <Link
+              href="/admin"
+              className="hidden shrink-0 rounded-xl border border-white/10 px-4 py-3 text-sm font-medium text-white/60 transition hover:border-white/20 hover:text-white sm:block"
+            >
+              × Close
+            </Link>
           </div>
 
           <PortfolioClient />
