@@ -684,7 +684,7 @@ export default function Home() {
 =================================================== */}
 
 {marqueeVisible && marqueeText && (
-  <div className="marquee-wrapper">
+  <div className="marquee-wrapper mt-20">
     <div className="marquee-track">
       <div className="marquee-group">
         <span className="marquee-item">{marqueeText}</span>
