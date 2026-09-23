@@ -684,24 +684,21 @@ export default function Home() {
 =================================================== */}
 
 {marqueeVisible && marqueeText && (
-  <div className="fixed left-0 right-0 top-20 z-40 overflow-hidden border-b border-[#9c810c]/20 bg-[#080808] py-2">
-    <div className="marquee-track flex w-max whitespace-nowrap">
-
-      {/* COPY 1 */}
-      <div className="marquee-item flex shrink-0 items-center text-xs tracking-[0.25em] text-[#9c810c]">
-        <span>{marqueeText}</span>
-        <span className="mx-6">•</span>
+  <div className="marquee-wrapper">
+    <div className="marquee-track">
+      <div className="marquee-group">
+        <span className="marquee-item">{marqueeText}</span>
+        <span className="marquee-dot">•</span>
       </div>
 
-      {/* COPY 2 */}
-      <div className="marquee-item flex shrink-0 items-center text-xs tracking-[0.25em] text-[#9c810c]">
-        <span>{marqueeText}</span>
-        <span className="mx-6">•</span>
+      <div className="marquee-group" aria-hidden="true">
+        <span className="marquee-item">{marqueeText}</span>
+        <span className="marquee-dot">•</span>
       </div>
-
     </div>
   </div>
 )}
+      
 {/* ===================================================
     HERO
 =================================================== */}
