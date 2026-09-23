@@ -500,14 +500,14 @@ export default function Home() {
 
 <header className="fixed left-0 right-0 top-0 z-50 border-b border-white/10 bg-black/90 backdrop-blur-xl">
 
-  <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-5 sm:px-8 lg:px-10">
+  <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-3 sm:px-8 lg:px-10">
 
     {/* LOGO */}
 
     <a
       href="#home"
       onClick={() => setMobileMenuOpen(false)}
-      className="flex items-center gap-3"
+      className="flex min-w-0 items-center gap-2 sm:gap-3"
     >
 
       <Image
@@ -519,13 +519,13 @@ export default function Home() {
         priority
       />
 
-      <div className="hidden sm:block">
+      <div className="block min-w-0">
 
-        <p className="brand-font text-xl">
+        <p className="brand-font text-sm sm:text-xl">
           MEENAKSHI
         </p>
 
-        <p className="text-[9px] tracking-[0.18em] text-[#9c810c]">
+        <p className="text-[7px] tracking-[0.14em] text-[#9c810c] sm:text-[9px] sm:tracking-[0.18em]">
           BRIDAL STUDIO & FAMILY SALON
         </p>
 
@@ -593,7 +593,7 @@ export default function Home() {
           setMobileMenuOpen(false);
           openBookingForm();
         }}
-        className="rounded-full border border-[#9c810c] px-4 py-2 text-xs font-semibold tracking-wider text-[#9c810c] transition hover:bg-[#9c810c] hover:text-black"
+        className="touch-manipulation rounded-full border border-[#9c810c] px-3 py-2 text-[10px] font-semibold tracking-wider text-[#9c810c] transition duration-200 hover:bg-[#9c810c] hover:text-black active:scale-95 active:bg-[#9c810c] active:text-black active:shadow-[0_0_20px_rgba(156,129,12,0.45)] sm:px-4 sm:text-xs"
       >
         BOOK NOW
       </button>
@@ -605,7 +605,7 @@ export default function Home() {
         onClick={() => setMobileMenuOpen((open) => !open)}
         aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
         aria-expanded={mobileMenuOpen}
-        className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 text-white transition hover:border-[#9c810c] hover:text-[#9c810c] md:hidden"
+        className="touch-manipulation flex h-10 w-10 items-center justify-center rounded-full border border-white/10 text-white transition duration-200 hover:border-[#9c810c] hover:text-[#9c810c] active:scale-90 active:border-[#9c810c] active:text-[#9c810c] active:shadow-[0_0_20px_rgba(156,129,12,0.35)] md:hidden"
       >
         {mobileMenuOpen ? (
           <span className="text-xl leading-none">×</span>
@@ -746,21 +746,21 @@ export default function Home() {
             <button
               type="button"
               onClick={() => openBookingForm()}
-              className="rounded-full bg-[#9c810c] px-8 py-4 text-sm font-bold tracking-wider text-black transition duration-300 hover:scale-105 hover:bg-white"
+              className="touch-manipulation rounded-full bg-[#9c810c] px-8 py-4 text-sm font-bold tracking-wider text-black transition duration-200 hover:scale-105 hover:bg-white active:scale-95 active:bg-white active:shadow-[0_0_30px_rgba(156,129,12,0.55)]"
             >
               BOOK APPOINTMENT
             </button>
 
             <a
               href="#services"
-              className="rounded-full border border-white/20 px-8 py-4 text-sm font-semibold tracking-wider text-white transition duration-300 hover:border-[#9c810c] hover:text-[#9c810c]"
+              className="touch-manipulation rounded-full border border-white/20 px-8 py-4 text-sm font-semibold tracking-wider text-white transition duration-200 hover:border-[#9c810c] hover:text-[#9c810c] active:scale-95 active:border-[#9c810c] active:text-[#9c810c] active:shadow-[0_0_25px_rgba(156,129,12,0.35)]"
             >
               VIEW SERVICES
             </a>
 
             <a
               href="#portfolio"
-              className="rounded-full border border-white/20 px-8 py-4 text-sm font-semibold tracking-wider text-white transition duration-300 hover:border-[#9c810c] hover:text-[#9c810c]"
+              className="touch-manipulation rounded-full border border-white/20 px-8 py-4 text-sm font-semibold tracking-wider text-white transition duration-200 hover:border-[#9c810c] hover:text-[#9c810c] active:scale-95 active:border-[#9c810c] active:text-[#9c810c] active:shadow-[0_0_25px_rgba(156,129,12,0.35)]"
             >
               VIEW PORTFOLIO
             </a>
@@ -819,7 +819,7 @@ export default function Home() {
                       isSelected ? null : category.id
                     )
                   }
-                  className={`group relative overflow-hidden rounded-3xl border text-left transition-all duration-700 ${
+                  className={`group touch-manipulation relative overflow-hidden rounded-3xl border text-left transition-all duration-300 active:scale-[0.98] active:shadow-[0_0_30px_rgba(156,129,12,0.25)] ${
                     isSelected
                       ? "border-[#9c810c] shadow-[0_0_50px_rgba(156,129,12,0.18)]"
                       : "border-white/10 hover:-translate-y-2 hover:border-[#9c810c]/60"
@@ -940,7 +940,7 @@ export default function Home() {
                         onClick={() => openBookingForm(service.name)}
                         aria-label={`Book appointment for ${service.name}`}
                         title={`Book ${service.name}`}
-                        className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[#9c810c]/50 bg-[#9c810c]/10 text-[#9c810c] transition duration-300 hover:bg-[#9c810c] hover:text-black"
+                        className="touch-manipulation flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[#9c810c]/50 bg-[#9c810c]/10 text-[#9c810c] transition duration-200 hover:bg-[#9c810c] hover:text-black active:scale-90 active:bg-[#9c810c] active:text-black active:shadow-[0_0_20px_rgba(156,129,12,0.45)]"
                       >
                         <span className="text-base">📅</span>
                       </button>
@@ -1025,7 +1025,7 @@ export default function Home() {
                     scrollPortfolioImages("left")
                   }
                   aria-label="Previous portfolio image"
-                  className="flex h-11 w-11 items-center justify-center rounded-full border border-white/15 text-lg text-white transition duration-300 hover:border-[#9c810c] hover:bg-[#9c810c] hover:text-black"
+                  className="touch-manipulation flex h-11 w-11 items-center justify-center rounded-full border border-white/15 text-lg text-white transition duration-200 hover:border-[#9c810c] hover:bg-[#9c810c] hover:text-black active:scale-90 active:border-[#9c810c] active:bg-[#9c810c] active:text-black active:shadow-[0_0_20px_rgba(156,129,12,0.4)]"
                 >
                   ←
                 </button>
@@ -1036,7 +1036,7 @@ export default function Home() {
                     scrollPortfolioImages("right")
                   }
                   aria-label="Next portfolio image"
-                  className="flex h-11 w-11 items-center justify-center rounded-full border border-white/15 text-lg text-white transition duration-300 hover:border-[#9c810c] hover:bg-[#9c810c] hover:text-black"
+                  className="touch-manipulation flex h-11 w-11 items-center justify-center rounded-full border border-white/15 text-lg text-white transition duration-200 hover:border-[#9c810c] hover:bg-[#9c810c] hover:text-black active:scale-90 active:border-[#9c810c] active:bg-[#9c810c] active:text-black active:shadow-[0_0_20px_rgba(156,129,12,0.4)]"
                 >
                   →
                 </button>
@@ -1125,7 +1125,7 @@ export default function Home() {
                     scrollPortfolioMedia("left")
                   }
                   aria-label="Previous portfolio media"
-                  className="flex h-11 w-11 items-center justify-center rounded-full border border-white/15 text-lg text-white transition duration-300 hover:border-[#9c810c] hover:bg-[#9c810c] hover:text-black"
+                  className="touch-manipulation flex h-11 w-11 items-center justify-center rounded-full border border-white/15 text-lg text-white transition duration-200 hover:border-[#9c810c] hover:bg-[#9c810c] hover:text-black active:scale-90 active:border-[#9c810c] active:bg-[#9c810c] active:text-black active:shadow-[0_0_20px_rgba(156,129,12,0.4)]"
                 >
                   ←
                 </button>
@@ -1136,7 +1136,7 @@ export default function Home() {
                     scrollPortfolioMedia("right")
                   }
                   aria-label="Next portfolio media"
-                  className="flex h-11 w-11 items-center justify-center rounded-full border border-white/15 text-lg text-white transition duration-300 hover:border-[#9c810c] hover:bg-[#9c810c] hover:text-black"
+                  className="touch-manipulation flex h-11 w-11 items-center justify-center rounded-full border border-white/15 text-lg text-white transition duration-200 hover:border-[#9c810c] hover:bg-[#9c810c] hover:text-black active:scale-90 active:border-[#9c810c] active:bg-[#9c810c] active:text-black active:shadow-[0_0_20px_rgba(156,129,12,0.4)]"
                 >
                   →
                 </button>
@@ -1220,7 +1220,7 @@ export default function Home() {
             <button
               type="button"
               onClick={() => openBookingForm()}
-              className="rounded-full bg-[#9c810c] px-8 py-4 text-center text-sm font-bold tracking-wider text-black transition hover:bg-white"
+              className="touch-manipulation rounded-full bg-[#9c810c] px-8 py-4 text-center text-sm font-bold tracking-wider text-black transition duration-200 hover:bg-white active:scale-95 active:bg-white active:shadow-[0_0_30px_rgba(156,129,12,0.55)]"
             >
               BOOK THROUGH WEBSITE
             </button>
@@ -1229,14 +1229,14 @@ export default function Home() {
               href="https://wa.me/919995013301"
               target="_blank"
               rel="noreferrer"
-              className="rounded-full border border-[#9c810c]/60 px-8 py-4 text-center text-sm font-semibold tracking-wider text-[#9c810c] transition hover:bg-[#9c810c] hover:text-black"
+              className="touch-manipulation rounded-full border border-[#9c810c]/60 px-8 py-4 text-center text-sm font-semibold tracking-wider text-[#9c810c] transition duration-200 hover:bg-[#9c810c] hover:text-black active:scale-95 active:bg-[#9c810c] active:text-black active:shadow-[0_0_25px_rgba(156,129,12,0.45)]"
             >
               BOOK ON WHATSAPP
             </a>
 
             <a
               href="#contact"
-              className="rounded-full border border-white/15 px-8 py-4 text-center text-sm font-semibold tracking-wider transition hover:border-[#9c810c] hover:text-[#9c810c]"
+              className="touch-manipulation rounded-full border border-white/15 px-8 py-4 text-center text-sm font-semibold tracking-wider transition duration-200 hover:border-[#9c810c] hover:text-[#9c810c] active:scale-95 active:border-[#9c810c] active:text-[#9c810c] active:shadow-[0_0_25px_rgba(156,129,12,0.35)]"
             >
               CONTACT US
             </a>
@@ -1486,7 +1486,7 @@ export default function Home() {
               type="button"
               onClick={() => setShowBookingForm(false)}
               aria-label="Close booking form"
-              className="absolute right-5 top-5 flex h-10 w-10 items-center justify-center rounded-full border border-white/10 text-xl text-white transition hover:border-[#9c810c] hover:text-[#9c810c]"
+              className="touch-manipulation absolute right-5 top-5 flex h-10 w-10 items-center justify-center rounded-full border border-white/10 text-xl text-white transition duration-200 hover:border-[#9c810c] hover:text-[#9c810c] active:scale-90 active:border-[#9c810c] active:text-[#9c810c] active:shadow-[0_0_20px_rgba(156,129,12,0.35)]"
             >
               ×
             </button>
@@ -1524,7 +1524,7 @@ export default function Home() {
                 <button
                   type="button"
                   onClick={() => setShowBookingForm(false)}
-                  className="mt-6 rounded-full bg-[#9c810c] px-7 py-3 font-semibold text-black transition hover:bg-white"
+                  className="touch-manipulation mt-6 rounded-full bg-[#9c810c] px-7 py-3 font-semibold text-black transition duration-200 hover:bg-white active:scale-95 active:bg-white active:shadow-[0_0_25px_rgba(156,129,12,0.45)]"
                 >
                   CLOSE
                 </button>
@@ -1589,7 +1589,7 @@ export default function Home() {
                             service: "",
                           });
                         }}
-                        className={`rounded-2xl border px-4 py-4 text-left transition ${
+                        className={`touch-manipulation rounded-2xl border px-4 py-4 text-left transition duration-200 active:scale-[0.98] active:shadow-[0_0_20px_rgba(156,129,12,0.25)] ${
                           bookingCategory === category.id
                             ? "border-[#9c810c] bg-[#9c810c]/10 text-[#9c810c]"
                             : "border-white/10 bg-black text-zinc-300 hover:border-[#9c810c]/50"
@@ -1702,7 +1702,7 @@ export default function Home() {
                 <button
                   type="submit"
                   disabled={bookingSubmitting}
-                  className="w-full rounded-full bg-[#9c810c] px-6 py-4 font-bold text-black transition hover:bg-white disabled:cursor-not-allowed disabled:opacity-60"
+                  className="touch-manipulation w-full rounded-full bg-[#9c810c] px-6 py-4 font-bold text-black transition duration-200 hover:bg-white active:scale-[0.98] active:bg-white active:shadow-[0_0_30px_rgba(156,129,12,0.5)] disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   {bookingSubmitting
                     ? "SUBMITTING..."
