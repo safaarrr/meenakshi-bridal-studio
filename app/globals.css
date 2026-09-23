@@ -85,6 +85,10 @@ body {
    MARQUEE
 ========================================================= */
 
+/* =========================================================
+   MARQUEE
+========================================================= */
+
 .marquee-wrapper {
   width: 100%;
   overflow: hidden;
@@ -106,11 +110,13 @@ body {
 
 .marquee-item {
   flex-shrink: 0;
+  color: #9c810c;
 }
 
 .marquee-dot {
   flex-shrink: 0;
   margin: 0 28px;
+  color: #9c810c;
 }
 
 .marquee-track:hover {
@@ -123,10 +129,9 @@ body {
   }
 
   to {
-    transform: translateX(-25%);
+    transform: translateX(-50%);
   }
 }
-
 /* =========================================================
    HERO ANIMATIONS
 ========================================================= */
