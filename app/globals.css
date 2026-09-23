@@ -87,22 +87,13 @@ body {
 
 .marquee-wrapper {
   width: 100%;
-  height: 36px;
-  display: flex;
-  align-items: center;
   overflow: hidden;
   white-space: nowrap;
-  background: #080808;
-  border-top: 1px solid #27272a;
-  border-bottom: 1px solid #27272a;
-  position: relative;
-  z-index: 20;
 }
 
 .marquee-track {
   display: flex;
   width: max-content;
-  flex-shrink: 0;
   animation: marquee 10s linear infinite;
   will-change: transform;
 }
@@ -111,26 +102,15 @@ body {
   display: flex;
   align-items: center;
   flex-shrink: 0;
-  height: 36px;
 }
 
 .marquee-item {
-  display: inline-block;
   flex-shrink: 0;
-  color: #9c810c;
-  font-size: 13px;
-  font-weight: 600;
-  letter-spacing: 0.25em;
-  line-height: 1;
 }
 
 .marquee-dot {
-  display: inline-block;
   flex-shrink: 0;
   margin: 0 28px;
-  color: #9c810c;
-  font-size: 13px;
-  line-height: 1;
 }
 
 .marquee-track:hover {
@@ -143,9 +123,10 @@ body {
   }
 
   to {
-    transform: translateX(-50%);
+    transform: translateX(-25%);
   }
 }
+
 /* =========================================================
    HERO ANIMATIONS
 ========================================================= */
