@@ -118,16 +118,16 @@ const initialCategoryServices: Record<string, string[]> = {
 
 const branches = [
   {
-    name: "Kottiyam – Dreams Mall",
-    location: "Near Lulu, Kottiyam",
+    name: "Kottiyam",
+    location: "Near Lulu Mall, Kottiyam",
   },
   {
-    name: "Kottiyam – Shimla",
-    location: "Near Shimla, Kottiyam",
+    name: "Kottiyam",
+    location: "Near Simla Textiles, Kottiyam",
   },
   {
-    name: "Nedumankavu",
-    location: "Nedumankavu",
+    name: "Nedumancavu",
+    location: "Near Iyyallor Mahavishnu Temple, Nedumancavu",
   },
 ];
 
