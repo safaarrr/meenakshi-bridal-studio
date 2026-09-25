@@ -175,27 +175,89 @@ export default async function AdminPage() {
 
       {/* MAIN */}
       <section className="lg:ml-64">
-        <header className="flex items-center justify-between border-b border-white/10 px-6 py-5 lg:px-10">
+        <header className="relative flex items-center justify-between border-b border-white/10 px-4 py-4 sm:px-6 sm:py-5 lg:px-10">
           <div>
-            <p className="text-xs uppercase tracking-[0.3em] text-[#9c810c]">
+            <p className="text-[10px] uppercase tracking-[0.3em] text-[#9c810c] sm:text-xs">
               Admin Dashboard
             </p>
-            <h2 className="mt-2 text-2xl font-bold">Welcome back</h2>
+            <h2 className="mt-2 text-xl font-bold sm:text-2xl">Welcome back</h2>
           </div>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 sm:gap-4">
+            {/* MOBILE NAVIGATION */}
+            <details className="relative lg:hidden">
+              <summary className="flex h-10 cursor-pointer list-none items-center gap-2 rounded-lg border border-white/10 bg-[#080808] px-3 text-xs font-semibold uppercase tracking-[0.16em] text-white/75 transition hover:border-[#9c810c]/50 hover:text-white active:scale-95 [&::-webkit-details-marker]:hidden">
+                <span className="text-base leading-none">☰</span>
+                <span className="hidden min-[380px]:inline">Menu</span>
+              </summary>
+
+              <div className="absolute right-0 top-full z-50 mt-2 w-56 rounded-2xl border border-white/10 bg-[#0a0a0a] p-2 shadow-2xl shadow-black/50">
+                <div className="border-b border-white/10 px-3 py-2">
+                  <p className="text-[9px] uppercase tracking-[0.25em] text-white/30">
+                    Management
+                  </p>
+                </div>
+
+                <nav className="mt-1 space-y-1">
+                  <Link
+                    href="/admin"
+                    className="block rounded-lg bg-[#9c810c] px-4 py-3 text-sm font-semibold text-white transition active:scale-[0.98]"
+                  >
+                    Dashboard
+                  </Link>
+
+                  <Link
+                    href="/admin/appointments"
+                    className="block rounded-lg px-4 py-3 text-sm text-white/65 transition hover:bg-white/5 hover:text-white active:scale-[0.98]"
+                  >
+                    Appointments
+                  </Link>
+
+                  <Link
+                    href="/admin/portfolio"
+                    className="block rounded-lg px-4 py-3 text-sm text-white/65 transition hover:bg-white/5 hover:text-white active:scale-[0.98]"
+                  >
+                    Portfolio
+                  </Link>
+
+                  <Link
+                    href="/admin/services"
+                    className="block rounded-lg px-4 py-3 text-sm text-white/65 transition hover:bg-white/5 hover:text-white active:scale-[0.98]"
+                  >
+                    Services
+                  </Link>
+
+                  <Link
+                    href="/admin/marquee"
+                    className="block rounded-lg px-4 py-3 text-sm text-white/65 transition hover:bg-white/5 hover:text-white active:scale-[0.98]"
+                  >
+                    Marquee
+                  </Link>
+
+                  <div className="my-1 border-t border-white/10" />
+
+                  <Link
+                    href="/"
+                    className="block rounded-lg px-4 py-3 text-sm text-white/40 transition hover:bg-white/5 hover:text-white active:scale-[0.98]"
+                  >
+                    ← View Website
+                  </Link>
+                </nav>
+              </div>
+            </details>
+
             <div className="hidden text-right sm:block">
               <p className="text-sm font-semibold">Administrator</p>
               <p className="text-xs text-white/35">Meenakshi Studio</p>
             </div>
 
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#9c810c] font-bold">
+            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#9c810c] text-sm font-bold sm:h-10 sm:w-10 sm:text-base">
               M
             </div>
           </div>
         </header>
 
-        <div className="p-6 lg:p-10">
+        <div className="p-4 sm:p-6 lg:p-10">
           <div className="mb-8">
             <p className="text-sm text-white/40">
               Here&apos;s what&apos;s happening with your website.
@@ -206,7 +268,7 @@ export default async function AdminPage() {
           <div className="grid gap-4 md:grid-cols-3">
             <Link
               href="/admin/appointments"
-              className="group rounded-2xl border border-white/10 bg-[#080808] p-6 transition hover:border-[#9c810c]/50 hover:bg-[#0d0d0d]"
+              className="group rounded-2xl border border-white/10 bg-[#080808] p-5 transition hover:border-[#9c810c]/50 hover:bg-[#0d0d0d] sm:p-6"
             >
               <div className="flex items-center justify-between">
                 <p className="text-xs uppercase tracking-[0.2em] text-white/35">
@@ -228,7 +290,7 @@ export default async function AdminPage() {
 
             <Link
               href="/admin/portfolio"
-              className="group rounded-2xl border border-white/10 bg-[#080808] p-6 transition hover:border-[#9c810c]/50 hover:bg-[#0d0d0d]"
+              className="group rounded-2xl border border-white/10 bg-[#080808] p-5 transition hover:border-[#9c810c]/50 hover:bg-[#0d0d0d] sm:p-6"
             >
               <div className="flex items-center justify-between">
                 <p className="text-xs uppercase tracking-[0.2em] text-white/35">
@@ -250,7 +312,7 @@ export default async function AdminPage() {
 
             <Link
               href="/admin/services"
-              className="group rounded-2xl border border-white/10 bg-[#080808] p-6 transition hover:border-[#9c810c]/50 hover:bg-[#0d0d0d]"
+              className="group rounded-2xl border border-white/10 bg-[#080808] p-5 transition hover:border-[#9c810c]/50 hover:bg-[#0d0d0d] sm:p-6"
             >
               <div className="flex items-center justify-between">
                 <p className="text-xs uppercase tracking-[0.2em] text-white/35">
