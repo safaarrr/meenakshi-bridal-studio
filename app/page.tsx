@@ -47,7 +47,7 @@ const categories: Category[] = [
     description:
       "Detailed beauty services for your special moments.",
     image:
-      "/nailimage.png",
+      "/nail.png",
   },
   {
     id: "bridal",
