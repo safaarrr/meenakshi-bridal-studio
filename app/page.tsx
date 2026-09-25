@@ -47,7 +47,7 @@ const categories: Category[] = [
     description:
       "Detailed beauty services for your special moments.",
     image:
-      "https://images.unsplash.com/photo-1604654894610-df63bc536371?auto=format&fit=crop&w=1200&q=80",
+      "/nailimage.png",
   },
   {
     id: "bridal",
@@ -55,7 +55,7 @@ const categories: Category[] = [
     description:
       "Makeup and beauty services for unforgettable occasions.",
     image:
-      "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?auto=format&fit=crop&w=1200&q=80",
+      "/destinationwedding.jpg",
   },
 ];
 
