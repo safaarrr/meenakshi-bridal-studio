@@ -735,7 +735,7 @@ export default function Home() {
           key={index}
           aria-hidden={index >= 4}
         >
-          <span className="px-2 text-xs font-medium tracking-[0.25em] text-[#f9f104] sm:text-sm">
+          <span className="px-2 text-xs font-medium tracking-[0.25em] text-[#9c810c] sm:text-sm">
             {marqueeText}
           </span>
           <span className="px-2 text-[#9c810c]" aria-hidden="true">•</span>
