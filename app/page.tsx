@@ -132,7 +132,7 @@ const branches = [
 ];
 
 export default function Home() {
-  const aboutImages = ["/about-1.jpg", "/about-2.jpg", "/about-3.jpg"];
+  const aboutImages = ["/about.jpeg", "/about2.jpeg", "/about3.jpeg","/about5.jpeg","/about6.jpeg"];
   const [aboutImageIndex, setAboutImageIndex] = useState(0);
 
   useEffect(() => {
