@@ -1260,77 +1260,155 @@ export default function Home() {
 
           {/* ABOUT HEADING */}
 
-          <div className="mb-14">
-
-            <p className="heading-font text-4xl font-semibold tracking-wide text-[#9c810c] sm:text-5xl">
-              ABOUT MEENAKSHI
+          <div className="mb-16 max-w-4xl">
+            <p className="text-xs font-semibold tracking-[0.35em] text-[#9c810c]">
+              OUR STORY
             </p>
 
-            <h2 className="heading-font mt-3 text-2xl font-normal tracking-wide text-white sm:text-3xl">
-              Beauty, confidence & care.
+            <h2 className="heading-font mt-5 text-4xl font-normal leading-tight text-white sm:text-6xl">
+              Beauty, Elevated Into an{" "}
+              <span className="italic text-[#9c810c]">Experience.</span>
             </h2>
 
-            <p className="mt-4 max-w-2xl text-sm leading-7 text-zinc-400 sm:text-base">
-              A professional beauty destination for bridal artistry,
-              hair care, skin treatments and everyday salon services.
+            <p className="mt-7 max-w-3xl text-sm leading-8 text-zinc-400 sm:text-base">
+              Every beauty journey holds a story. It may be a bride preparing
+              for her most cherished day, a mother celebrating a special
+              moment, a groom getting ready for a new beginning, or a woman
+              simply taking time for herself. At Meenakshi, we believe every
+              moment deserves to feel personal, thoughtful and beautiful.
             </p>
-
           </div>
 
-          {/* ABOUT CONTENT */}
+          {/* ABOUT IMAGE + STORY */}
 
-          <div className="grid items-center gap-14 lg:grid-cols-2">
-
-            {/* PHOTO */}
-
+          <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
             <div className="relative">
-
-              <div className="relative aspect-[4/5] overflow-hidden rounded-[2rem] border border-white/10">
-
+              <div className="relative aspect-[4/5] overflow-hidden rounded-[2rem] border border-white/10 bg-black">
                 <Image
-                  src="https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=1200&q=80"
-                  alt="Meenakshi Studio"
+                  src="/about.jpg"
+                  alt="Meenakshi Bridal Studio and Family Salon"
                   fill
                   sizes="(max-width: 1024px) 100vw, 50vw"
                   className="object-cover"
                 />
-
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
-
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
                 <div className="absolute bottom-7 left-7">
-
-                  <p className="text-xs tracking-[0.3em] text-[#9c810c]">
+                  <p className="text-xs tracking-[0.3em] text-[#f9f104]">
                     MEENAKSHI
                   </p>
-
-                  <p className="heading-font mt-2 text-xl">
-                    Bridal Studio & Family Salon
+                  <p className="heading-font mt-2 text-xl text-white sm:text-2xl">
+                    Beauty, with a personal touch.
                   </p>
-
                 </div>
+              </div>
+              <div className="pointer-events-none absolute -bottom-4 -right-4 -z-0 h-28 w-28 rounded-full border border-[#9c810c]/30" />
+            </div>
 
+            <div className="space-y-8">
+              <div>
+                <p className="text-xs font-semibold tracking-[0.3em] text-[#9c810c]">
+                  WHERE BEAUTY BECOMES PERSONAL
+                </p>
+                <p className="mt-4 text-sm leading-8 text-zinc-400 sm:text-base">
+                  Founded by Harshaja, a makeup artist and hairstylist with
+                  over 20 years of experience, Meenakshi was built around a
+                  simple belief: beauty should never feel one-size-fits-all.
+                  Every person has a unique style, personality and story.
+                </p>
               </div>
 
-            </div>
+              <div>
+                <p className="text-xs font-semibold tracking-[0.3em] text-[#9c810c]">
+                  THE ART OF THE TRANSFORMATION
+                </p>
+                <p className="mt-4 text-sm leading-8 text-zinc-400 sm:text-base">
+                  From the first conversation to the finishing touch, each
+                  service is approached with care and attention. Our work
+                  brings together artistry, experience and an understanding
+                  of what makes every client feel like themselves.
+                </p>
+              </div>
 
-            {/* ABOUT TEXT */}
+              <div>
+                <p className="text-xs font-semibold tracking-[0.3em] text-[#9c810c]">
+                  A QUIET KIND OF LUXURY
+                </p>
+                <p className="mt-4 text-sm leading-8 text-zinc-400 sm:text-base">
+                  For us, luxury is found in the details: a comfortable
+                  experience, thoughtful service and the confidence that
+                  comes from feeling cared for. Whether you visit for a
+                  bridal transformation or an everyday beauty service, you
+                  deserve that same attention.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* FOUNDER */}
+
+          <div className="mt-24 grid items-center gap-10 rounded-[2rem] border border-white/10 bg-black/60 p-6 sm:p-10 lg:grid-cols-[0.85fr_1.15fr] lg:gap-16 lg:p-14">
+            <div className="relative mx-auto w-full max-w-md">
+              <div className="relative aspect-[4/5] overflow-hidden rounded-[1.75rem] border border-[#9c810c]/30 bg-[#080808]">
+                <Image
+                  src="/founder.jpeg"
+                  alt="Harshaja, founder of Meenakshi Bridal Studio & Family Salon"
+                  fill
+                  sizes="(max-width: 1024px) 100vw, 40vw"
+                  className="object-cover"
+                />
+              </div>
+            </div>
 
             <div>
-
-              <p className="text-sm leading-8 text-zinc-400 sm:text-base">
-                Meenakshi Bridal Studio & Family Salon brings together
-                professional beauty care, hair styling, skin treatments and
-                bridal artistry in one place.
+              <p className="text-xs font-semibold tracking-[0.35em] text-[#9c810c]">
+                MEET THE FOUNDER
               </p>
-
+              <h3 className="heading-font mt-4 text-3xl font-normal text-white sm:text-5xl">
+                Harshaja
+              </h3>
+              <p className="mt-3 text-sm tracking-[0.15em] text-[#9c810c]">
+                THE ARTIST BEHIND MEENAKSHI
+              </p>
+              <p className="mt-7 text-sm leading-8 text-zinc-400 sm:text-base">
+                With more than two decades of experience in makeup and
+                hairstyling, Harshaja has helped clients prepare for
+                meaningful moments and milestones. Her approach is rooted
+                in listening, understanding each person and creating a look
+                that feels natural to them.
+              </p>
               <p className="mt-5 text-sm leading-8 text-zinc-400 sm:text-base">
-                From everyday beauty treatments to important bridal moments,
-                our aim is to help every client feel confident, comfortable
-                and beautiful.
+                Over the years, Meenakshi has been part of thousands of
+                personal stories, welcoming more than 50,000 customers.
+                The trust placed in the studio continues to shape its
+                commitment to thoughtful service and individual beauty.
               </p>
-
             </div>
+          </div>
 
+          {/* THE MEENAKSHI PROMISE */}
+
+          <div className="mx-auto mt-24 max-w-4xl text-center">
+            <p className="text-xs font-semibold tracking-[0.35em] text-[#9c810c]">
+              THE MEENAKSHI PROMISE
+            </p>
+            <h3 className="heading-font mt-5 text-3xl font-normal leading-tight text-white sm:text-5xl">
+              Beyond the bridal day.
+              <br />
+              <span className="italic text-[#9c810c]">Beyond the mirror.</span>
+            </h3>
+            <p className="mx-auto mt-6 max-w-3xl text-sm leading-8 text-zinc-400 sm:text-base">
+              Meenakshi is more than a destination for bridal beauty. It is a
+              place to celebrate your individuality, care for yourself and
+              feel confident through every stage of life. From makeup and
+              hair to skin and everyday salon services, we are here for your
+              story.
+            </p>
+            <p className="heading-font mt-10 text-xl text-white sm:text-2xl">
+              Your Beauty. Your Story. Our Art.
+            </p>
+            <p className="mt-3 text-xs tracking-[0.18em] text-zinc-500 sm:text-sm">
+              Come for the transformation. Leave with a memory.
+            </p>
           </div>
 
           {/* BRANCHES */}
