@@ -132,6 +132,16 @@ const branches = [
 ];
 
 export default function Home() {
+  const aboutImages = ["/about-1.jpg", "/about-2.jpg", "/about-3.jpg"];
+  const [aboutImageIndex, setAboutImageIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = window.setInterval(() => {
+      setAboutImageIndex((current) => (current + 1) % aboutImages.length);
+    }, 3000);
+
+    return () => window.clearInterval(interval);
+  }, []);
   const [services, setServices] = useState<Service[]>([]);
   const [portfolioImages, setPortfolioImages] = useState<string[]>([]);
   const [portfolioVideos, setPortfolioVideos] = useState<string[]>([]);
@@ -1284,13 +1294,19 @@ export default function Home() {
           <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
             <div className="relative">
               <div className="relative aspect-[4/5] overflow-hidden rounded-[2rem] border border-white/10 bg-black">
-                <Image
-                  src="/about.jpeg"
-                  alt="Meenakshi Bridal Studio and Family Salon"
-                  fill
-                  sizes="(max-width: 1024px) 100vw, 50vw"
-                  className="object-cover"
-                />
+                {aboutImages.map((src, index) => (
+                  <Image
+                    key={src}
+                    src={src}
+                    alt="Meenakshi Bridal Studio and Family Salon"
+                    fill
+                    priority={index === 0}
+                    sizes="(max-width: 1024px) 100vw, 50vw"
+                    className={`object-cover transition-opacity duration-1000 ease-in-out ${
+                      index === aboutImageIndex ? "opacity-100" : "opacity-0"
+                    }`}
+                  />
+                ))}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
                 <div className="absolute bottom-7 left-7">
                   <p className="text-xs tracking-[0.3em] text-[#f9f104]">
