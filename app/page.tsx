@@ -698,21 +698,52 @@ export default function Home() {
 =================================================== */}
 
 {marqueeVisible && marqueeText && (
-  <div className="marquee-wrapper mt-20">
-    <div className="marquee-track">
+  <div className="mt-20 w-full overflow-hidden border-y border-[#9c810c]/20 bg-[#080808] py-3 sm:py-4">
+    <style>{`
+      @keyframes meenakshi-marquee-scroll {
+        from { transform: translate3d(0, 0, 0); }
+        to { transform: translate3d(-50%, 0, 0); }
+      }
+      .meenakshi-marquee-track {
+        display: flex;
+        width: max-content;
+        flex-wrap: nowrap;
+        animation: meenakshi-marquee-scroll 24s linear infinite;
+        -webkit-animation: meenakshi-marquee-scroll 24s linear infinite;
+        will-change: transform;
+        transform: translate3d(0, 0, 0);
+      }
+      .meenakshi-marquee-group {
+        display: flex;
+        flex: 0 0 auto;
+        align-items: center;
+        white-space: nowrap;
+        padding-right: 2rem;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .meenakshi-marquee-track {
+          animation: none;
+          -webkit-animation: none;
+          transform: none;
+        }
+      }
+    `}</style>
+    <div className="meenakshi-marquee-track">
       {Array.from({ length: 8 }).map((_, index) => (
         <div
-          className="marquee-group"
+          className="meenakshi-marquee-group"
           key={index}
           aria-hidden={index >= 4}
         >
-          <span className="marquee-item">{marqueeText}</span>
-          <span className="marquee-dot">•</span>
+          <span className="px-2 text-xs font-medium tracking-[0.25em] text-[#f9f104] sm:text-sm">
+            {marqueeText}
+          </span>
+          <span className="px-2 text-[#9c810c]" aria-hidden="true">•</span>
         </div>
       ))}
     </div>
   </div>
-)}
+)}}
       
 {/* ===================================================
     HERO
