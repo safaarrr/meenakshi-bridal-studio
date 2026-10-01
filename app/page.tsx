@@ -1235,14 +1235,21 @@ useEffect(() => {
         from { transform: translate3d(0, 0, 0); }
         to { transform: translate3d(-50%, 0, 0); }
       }
+      @-webkit-keyframes meenakshi-marquee-scroll {
+        from { -webkit-transform: translate3d(0, 0, 0); }
+        to { -webkit-transform: translate3d(-50%, 0, 0); }
+      }
       .meenakshi-marquee-track {
         display: flex;
         width: max-content;
         flex-wrap: nowrap;
         animation: meenakshi-marquee-scroll 24s linear infinite;
         -webkit-animation: meenakshi-marquee-scroll 24s linear infinite;
+        animation-play-state: running;
+        -webkit-animation-play-state: running;
         will-change: transform;
-        transform: translate3d(0, 0, 0);
+        -webkit-backface-visibility: hidden;
+        backface-visibility: hidden;
       }
       .meenakshi-marquee-group {
         display: flex;
@@ -1250,13 +1257,6 @@ useEffect(() => {
         align-items: center;
         white-space: nowrap;
         padding-right: 2rem;
-      }
-      @media (prefers-reduced-motion: reduce) {
-        .meenakshi-marquee-track {
-          animation: none;
-          -webkit-animation: none;
-          transform: none;
-        }
       }
     `}</style>
     <div className="meenakshi-marquee-track">
