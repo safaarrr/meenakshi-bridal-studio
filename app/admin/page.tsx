@@ -69,6 +69,8 @@ export default async function AdminPage() {
   let appointments: Appointment[] = [];
   let portfolioCount = 0;
   let activeServicesCount = 0;
+  let offersCount = 0;
+  let reviewsCount = 0;
 
   try {
     const appointmentData = await db.orm.public.Appointment.all();
@@ -90,6 +92,12 @@ export default async function AdminPage() {
       .all();
 
     portfolioCount = activePortfolio.length;
+
+    const offers = await db.orm.public.Offer.all();
+    offersCount = offers.length;
+
+    const reviews = await db.orm.public.Review.all();
+    reviewsCount = reviews.length;
   } catch (error) {
     console.error("Admin dashboard data error:", error);
   }
@@ -119,7 +127,7 @@ export default async function AdminPage() {
 
   return (
     <main className="min-h-screen bg-black text-white">
-      {/* SIDEBAR */}
+      {/* DESKTOP SIDEBAR */}
       <aside className="fixed left-0 top-0 hidden h-screen w-64 border-r border-white/10 bg-[#080808] lg:block">
         <div className="border-b border-white/10 p-6">
           <Link href="/" className="block">
@@ -160,6 +168,14 @@ export default async function AdminPage() {
             <Link href="/admin/marquee" className={navLink}>
               Marquee
             </Link>
+
+            <Link href="/admin/offers" className={navLink}>
+              Offers
+            </Link>
+
+            <Link href="/admin/reviews" className={navLink}>
+              Reviews
+            </Link>
           </div>
         </nav>
 
@@ -175,16 +191,19 @@ export default async function AdminPage() {
 
       {/* MAIN */}
       <section className="lg:ml-64">
+        {/* HEADER */}
         <header className="relative flex items-center justify-between border-b border-white/10 px-4 py-4 sm:px-6 sm:py-5 lg:px-10">
           <div>
             <p className="text-[10px] uppercase tracking-[0.3em] text-[#9c810c] sm:text-xs">
               Admin Dashboard
             </p>
-            <h2 className="mt-2 text-xl font-bold sm:text-2xl">Welcome back</h2>
+            <h2 className="mt-2 text-xl font-bold sm:text-2xl">
+              Welcome back
+            </h2>
           </div>
 
           <div className="flex items-center gap-2 sm:gap-4">
-            {/* MOBILE NAVIGATION */}
+            {/* MOBILE HAMBURGER MENU */}
             <details className="relative lg:hidden">
               <summary className="flex h-10 cursor-pointer list-none items-center gap-2 rounded-lg border border-white/10 bg-[#080808] px-3 text-xs font-semibold uppercase tracking-[0.16em] text-white/75 transition hover:border-[#9c810c]/50 hover:text-white active:scale-95 [&::-webkit-details-marker]:hidden">
                 <span className="text-base leading-none">☰</span>
@@ -234,6 +253,20 @@ export default async function AdminPage() {
                     Marquee
                   </Link>
 
+                  <Link
+                    href="/admin/offers"
+                    className="block rounded-lg px-4 py-3 text-sm text-white/65 transition hover:bg-white/5 hover:text-white active:scale-[0.98]"
+                  >
+                    Offers
+                  </Link>
+
+                  <Link
+                    href="/admin/reviews"
+                    className="block rounded-lg px-4 py-3 text-sm text-white/65 transition hover:bg-white/5 hover:text-white active:scale-[0.98]"
+                  >
+                    Reviews
+                  </Link>
+
                   <div className="my-1 border-t border-white/10" />
 
                   <Link
@@ -265,7 +298,8 @@ export default async function AdminPage() {
           </div>
 
           {/* MAIN STATS */}
-          <div className="grid gap-4 md:grid-cols-3">
+          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+            {/* APPOINTMENTS */}
             <Link
               href="/admin/appointments"
               className="group rounded-2xl border border-white/10 bg-[#080808] p-5 transition hover:border-[#9c810c]/50 hover:bg-[#0d0d0d] sm:p-6"
@@ -288,6 +322,7 @@ export default async function AdminPage() {
               </p>
             </Link>
 
+            {/* PORTFOLIO */}
             <Link
               href="/admin/portfolio"
               className="group rounded-2xl border border-white/10 bg-[#080808] p-5 transition hover:border-[#9c810c]/50 hover:bg-[#0d0d0d] sm:p-6"
@@ -310,6 +345,7 @@ export default async function AdminPage() {
               </p>
             </Link>
 
+            {/* SERVICES */}
             <Link
               href="/admin/services"
               className="group rounded-2xl border border-white/10 bg-[#080808] p-5 transition hover:border-[#9c810c]/50 hover:bg-[#0d0d0d] sm:p-6"
@@ -331,6 +367,52 @@ export default async function AdminPage() {
                 Active services
               </p>
             </Link>
+
+            {/* OFFERS */}
+            <Link
+              href="/admin/offers"
+              className="group rounded-2xl border border-white/10 bg-[#080808] p-5 transition hover:border-[#9c810c]/50 hover:bg-[#0d0d0d] sm:p-6"
+            >
+              <div className="flex items-center justify-between">
+                <p className="text-xs uppercase tracking-[0.2em] text-white/35">
+                  Offers
+                </p>
+                <span className="text-white/20 transition group-hover:translate-x-1">
+                  →
+                </span>
+              </div>
+
+              <p className="mt-5 text-4xl font-bold text-[#9c810c]">
+                {offersCount}
+              </p>
+
+              <p className="mt-2 text-xs text-white/30">
+                Total offers
+              </p>
+            </Link>
+
+            {/* REVIEWS */}
+            <Link
+              href="/admin/reviews"
+              className="group rounded-2xl border border-white/10 bg-[#080808] p-5 transition hover:border-[#9c810c]/50 hover:bg-[#0d0d0d] sm:p-6"
+            >
+              <div className="flex items-center justify-between">
+                <p className="text-xs uppercase tracking-[0.2em] text-white/35">
+                  Reviews
+                </p>
+                <span className="text-white/20 transition group-hover:translate-x-1">
+                  →
+                </span>
+              </div>
+
+              <p className="mt-5 text-4xl font-bold text-[#9c810c]">
+                {reviewsCount}
+              </p>
+
+              <p className="mt-2 text-xs text-white/30">
+                Total reviews
+              </p>
+            </Link>
           </div>
 
           {/* APPOINTMENT STATUS */}
@@ -343,6 +425,7 @@ export default async function AdminPage() {
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+              {/* PENDING */}
               <Link
                 href="/admin/appointments"
                 className="rounded-2xl border border-[#9c810c]/20 bg-[#9c810c]/5 p-5 transition hover:border-[#9c810c]/50"
@@ -358,6 +441,7 @@ export default async function AdminPage() {
                 </p>
               </Link>
 
+              {/* CONFIRMED */}
               <Link
                 href="/admin/appointments"
                 className="rounded-2xl border border-emerald-500/20 bg-emerald-500/5 p-5 transition hover:border-emerald-500/40"
@@ -373,6 +457,7 @@ export default async function AdminPage() {
                 </p>
               </Link>
 
+              {/* REJECTED */}
               <Link
                 href="/admin/appointments"
                 className="rounded-2xl border border-red-500/20 bg-red-500/5 p-5 transition hover:border-red-500/40"
@@ -388,6 +473,7 @@ export default async function AdminPage() {
                 </p>
               </Link>
 
+              {/* COMPLETED */}
               <Link
                 href="/admin/appointments"
                 className="rounded-2xl border border-blue-500/20 bg-blue-500/5 p-5 transition hover:border-blue-500/40"

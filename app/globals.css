@@ -29,7 +29,27 @@ html {
 
 body {
   margin: 0;
-  background: #000000;
+  min-height: 100vh;
+  background-color: #000000;
+  background-image:
+    radial-gradient(
+      ellipse at 15% 20%,
+      rgba(249, 241, 4, 0.10) 0%,
+      transparent 35%
+    ),
+    radial-gradient(
+      ellipse at 85% 45%,
+      rgba(156, 129, 12, 0.13) 0%,
+      transparent 40%
+    ),
+    radial-gradient(
+      ellipse at 50% 90%,
+      rgba(249, 241, 4, 0.07) 0%,
+      transparent 35%
+    );
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  background-size: cover;
   color: var(--foreground);
   font-family: var(--font-body);
 }
@@ -81,14 +101,6 @@ body {
    MARQUEE
 ========================================================= */
 
-/* =========================================================
-   MARQUEE
-========================================================= */
-
-/* =========================================================
-   MARQUEE
-========================================================= */
-
 .marquee-wrapper {
   width: 100%;
   overflow: hidden;
@@ -132,6 +144,7 @@ body {
     transform: translateX(-50%);
   }
 }
+
 /* =========================================================
    HERO ANIMATIONS
 ========================================================= */
@@ -206,7 +219,6 @@ body {
   height: 100%;
   overflow: hidden;
   pointer-events: none;
-
   z-index: 0;
 }
 
@@ -215,13 +227,10 @@ body {
 .particle-layer::before {
   content: "";
   position: absolute;
-
   width: 500px;
   height: 500px;
-
   left: -200px;
   top: 15%;
-
   border-radius: 50%;
 
   background: radial-gradient(
@@ -232,7 +241,6 @@ body {
   );
 
   filter: blur(25px);
-
   animation: goldGlowLeft 15s ease-in-out infinite alternate;
 }
 
@@ -241,13 +249,10 @@ body {
 .particle-layer::after {
   content: "";
   position: absolute;
-
   width: 550px;
   height: 550px;
-
   right: -220px;
   bottom: 5%;
-
   border-radius: 50%;
 
   background: radial-gradient(
@@ -258,7 +263,6 @@ body {
   );
 
   filter: blur(30px);
-
   animation: goldGlowRight 18s ease-in-out infinite alternate;
 }
 
@@ -300,12 +304,9 @@ body {
 
 .particle {
   position: absolute;
-
   width: 4px;
   height: 4px;
-
   border-radius: 50%;
-
   background: #9c810c;
 
   box-shadow:
@@ -313,7 +314,6 @@ body {
     0 0 20px rgba(156, 129, 12, 0.5);
 
   opacity: 0.7;
-
   animation: floatingParticle 8s ease-in-out infinite;
 }
 
@@ -405,6 +405,52 @@ body {
     opacity: 0.2;
   }
 }
+
+/* =========================================================
+   INTRO LOGO ANIMATIONS
+========================================================= */
+
+@keyframes meenakshi-logo-reveal {
+  from {
+    opacity: 0;
+    clip-path: inset(0 100% 0 0);
+    transform: translateY(18px);
+  }
+
+  to {
+    opacity: 1;
+    clip-path: inset(0 0 0 0);
+    transform: translateY(0);
+  }
+}
+
+.intro-logo-reveal {
+  animation: meenakshi-logo-reveal 2s ease-out both;
+}
+
+@keyframes meenakshi-subtitle-reveal {
+  from {
+    opacity: 0;
+    letter-spacing: 0.05em;
+  }
+
+  to {
+    opacity: 1;
+    letter-spacing: 0.3em;
+  }
+}
+
+.intro-subtitle {
+  animation: meenakshi-subtitle-reveal 1.2s ease-out 1s both;
+}
+
+.intro-particle-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  pointer-events: none;
+}
+
 /* =========================================================
    REDUCED MOTION
 ========================================================= */
@@ -417,13 +463,44 @@ body {
   .hero-circle,
   .hero-glow,
   .marquee-track,
-  body::before,
-  body::after,
-  .particle {
+  .particle,
+  .particle-layer::before,
+  .particle-layer::after,
+  .intro-logo-reveal,
+  .intro-subtitle {
     animation: none;
   }
 
   html {
     scroll-behavior: auto;
   }
+}
+
+body {
+  position: relative;
+  isolation: isolate;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      ellipse at 15% 20%,
+      rgba(249, 241, 4, 0.06),
+      transparent 35%
+    ),
+    radial-gradient(
+      ellipse at 85% 45%,
+      rgba(156, 129, 12, 0.08),
+      transparent 40%
+    ),
+    radial-gradient(
+      ellipse at 50% 90%,
+      rgba(249, 241, 4, 0.04),
+      transparent 35%
+    );
 }

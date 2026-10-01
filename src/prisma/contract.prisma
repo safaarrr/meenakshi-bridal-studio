@@ -51,3 +51,27 @@ model Portfolio {
   createdAt TimestamptzString @default(now())
   updatedAt temporal.updatedAtString()
 }
+
+model Review {
+  id           Int      @id @default(autoincrement())
+  customerName String
+  rating       Int
+  review       String
+  isActive     Boolean  @default(true)
+  sortOrder    Int      @default(0)
+  createdAt    TimestamptzString @default(now())
+  updatedAt    temporal.updatedAtString()
+}
+
+model Offer {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String?
+  imageUrl    String?
+  oldRate     Float?
+  newRate     Float?
+  isActive    Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  createdAt   TimestamptzString @default(now())
+  updatedAt   temporal.updatedAtString()
+}

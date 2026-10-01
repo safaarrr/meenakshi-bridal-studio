@@ -34,7 +34,7 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'cd2d92e4efe713a34f298bd567050e06776eb26bb0855974056589ff17964f54'>;
+  StorageHashBase<'47f6e4d8ef8099dd0aad7532095bc84b7381830b2377f8d9e6a4b383cee31bca'>;
 export type ExecutionHash =
   ExecutionHashBase<'c46a73f3bb74cd8d505a70011d974d7d6f65fccb826fe7262720d9e59c9e0558'>;
 export type ProfileHash =
@@ -273,8 +273,6 @@ export type FieldOutputTypes = {
       readonly title: CodecTypes['pg/text@1']['output'];
       readonly description: CodecTypes['pg/text@1']['output'] | null;
       readonly imageUrl: CodecTypes['pg/text@1']['output'] | null;
-      readonly oldRate: CodecTypes['pg/float8@1']['output'] | null;
-      readonly newRate: CodecTypes['pg/float8@1']['output'] | null;
       readonly isActive: CodecTypes['pg/bool@1']['output'];
       readonly sortOrder: CodecTypes['pg/int4@1']['output'];
       readonly createdAt: CodecTypes['pg/timestamptz-string@1']['output'];
@@ -346,8 +344,6 @@ export type FieldInputTypes = {
       readonly title: CodecTypes['pg/text@1']['input'];
       readonly description: CodecTypes['pg/text@1']['input'] | null;
       readonly imageUrl: CodecTypes['pg/text@1']['input'] | null;
-      readonly oldRate: CodecTypes['pg/float8@1']['input'] | null;
-      readonly newRate: CodecTypes['pg/float8@1']['input'] | null;
       readonly isActive: CodecTypes['pg/bool@1']['input'];
       readonly sortOrder: CodecTypes['pg/int4@1']['input'];
       readonly createdAt: CodecTypes['pg/timestamptz-string@1']['input'];
@@ -420,8 +416,6 @@ export type StorageColumnTypes = {
       readonly id: CodecTypes['pg/int4@1']['output'];
       readonly imageUrl: CodecTypes['pg/text@1']['output'] | null;
       readonly isActive: CodecTypes['pg/bool@1']['output'];
-      readonly newRate: CodecTypes['pg/float8@1']['output'] | null;
-      readonly oldRate: CodecTypes['pg/float8@1']['output'] | null;
       readonly sortOrder: CodecTypes['pg/int4@1']['output'];
       readonly title: CodecTypes['pg/text@1']['output'];
       readonly updatedAt: CodecTypes['pg/timestamptz-string@1']['output'];
@@ -493,8 +487,6 @@ export type StorageColumnInputTypes = {
       readonly id: CodecTypes['pg/int4@1']['input'];
       readonly imageUrl: CodecTypes['pg/text@1']['input'] | null;
       readonly isActive: CodecTypes['pg/bool@1']['input'];
-      readonly newRate: CodecTypes['pg/float8@1']['input'] | null;
-      readonly oldRate: CodecTypes['pg/float8@1']['input'] | null;
       readonly sortOrder: CodecTypes['pg/int4@1']['input'];
       readonly title: CodecTypes['pg/text@1']['input'];
       readonly updatedAt: CodecTypes['pg/timestamptz-string@1']['input'];
@@ -602,8 +594,6 @@ export namespace Models {
     title: CodecTypes['pg/text@1']['output'];
     description: CodecTypes['pg/text@1']['output'] | null;
     imageUrl: CodecTypes['pg/text@1']['output'] | null;
-    oldRate: CodecTypes['pg/float8@1']['output'] | null;
-    newRate: CodecTypes['pg/float8@1']['output'] | null;
     isActive: CodecTypes['pg/bool@1']['output'];
     sortOrder: CodecTypes['pg/int4@1']['output'];
     createdAt: CodecTypes['pg/timestamptz-string@1']['output'];
@@ -812,16 +802,6 @@ type ContractBase = Omit<
                 readonly imageUrl: {
                   readonly nativeType: 'text';
                   readonly codecId: 'pg/text@1';
-                  readonly nullable: true;
-                };
-                readonly oldRate: {
-                  readonly nativeType: 'float8';
-                  readonly codecId: 'pg/float8@1';
-                  readonly nullable: true;
-                };
-                readonly newRate: {
-                  readonly nativeType: 'float8';
-                  readonly codecId: 'pg/float8@1';
                   readonly nullable: true;
                 };
                 readonly isActive: {
@@ -1239,14 +1219,6 @@ type ContractBase = Omit<
                 readonly nullable: true;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
-              readonly oldRate: {
-                readonly nullable: true;
-                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/float8@1' };
-              };
-              readonly newRate: {
-                readonly nullable: true;
-                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/float8@1' };
-              };
               readonly isActive: {
                 readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/bool@1' };
@@ -1279,8 +1251,6 @@ type ContractBase = Omit<
                 readonly title: { readonly column: 'title' };
                 readonly description: { readonly column: 'description' };
                 readonly imageUrl: { readonly column: 'imageUrl' };
-                readonly oldRate: { readonly column: 'oldRate' };
-                readonly newRate: { readonly column: 'newRate' };
                 readonly isActive: { readonly column: 'isActive' };
                 readonly sortOrder: { readonly column: 'sortOrder' };
                 readonly createdAt: { readonly column: 'createdAt' };
