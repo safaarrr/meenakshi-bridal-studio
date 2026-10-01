@@ -1177,7 +1177,7 @@ useEffect(() => {
 {/* MEENAKSHI SCROLL INTRO */}
 <section
   ref={introRef}
-  className="relative h-[600vh] bg-black"
+  className="relative h-[400vh] bg-black"
   aria-label="Meenakshi brand introduction"
 >
   <div
