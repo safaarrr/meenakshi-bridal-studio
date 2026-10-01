@@ -220,19 +220,52 @@ function Reveal({
     const el = ref.current;
     if (!el) return;
  
+    const reduceMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    ).matches;
+
+    const isIOS =
+      /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+      (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+
+    // Keep content visible on browsers where IntersectionObserver is missing.
+    if (reduceMotion || !("IntersectionObserver" in window)) {
+      setShown(true);
+      return;
+    }
+
+    // iOS fallback: reveal from the actual viewport position as the user
+    // scrolls, rather than relying only on IntersectionObserver callbacks.
+    if (isIOS) {
+      const checkViewport = () => {
+        const rect = el.getBoundingClientRect();
+        if (rect.top < window.innerHeight * 0.92 && rect.bottom > 0) {
+          setShown(true);
+          window.removeEventListener("scroll", checkViewport);
+          window.removeEventListener("resize", checkViewport);
+        }
+      };
+      checkViewport();
+      if (!el || !el.isConnected) return;
+      window.addEventListener("scroll", checkViewport, { passive: true });
+      window.addEventListener("resize", checkViewport);
+      return () => {
+        window.removeEventListener("scroll", checkViewport);
+        window.removeEventListener("resize", checkViewport);
+      };
+    }
+
     const observer = new IntersectionObserver(
       ([entry]) => {
-        const reduceMotion = window.matchMedia(
-          "(prefers-reduced-motion: reduce)"
-        ).matches;
-        if (entry.isIntersecting || reduceMotion) {
+        if (entry.isIntersecting) {
           setShown(true);
           observer.disconnect();
         }
       },
-      { threshold: 0.12, rootMargin: "0px 0px -6% 0px" }
+      // A zero threshold is more reliable for short/narrow elements on mobile.
+      { threshold: 0, rootMargin: "0px 0px 0px 0px" }
     );
- 
+
     observer.observe(el);
     return () => observer.disconnect();
   }, []);
@@ -300,7 +333,14 @@ export default function Home() {
  
     const VIDEO_END = 0.85;
     const EASE = 0.16; // 0 = never arrives, 1 = instant. ~0.15 feels silky.
- 
+    // iOS Safari/Chrome do not reliably support frequent currentTime seeks
+    // while a page is being scrolled. Use gesture-started playback on iOS;
+    // desktop and other browsers retain the original scroll-scrub behavior.
+    const isIOS =
+      /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+      (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+    let iosPlaybackStarted = false;
+
     let scrollFrame = 0;
     let tickFrame = 0;
     let targetTime = 0;
@@ -314,13 +354,14 @@ export default function Home() {
       easedTime = Math.abs(diff) < 0.004 ? targetTime : easedTime + diff * EASE;
  
       // Don't stack seeks while the decoder is still busy with the last one.
-      if (!video.seeking && Math.abs(video.currentTime - easedTime) > 0.02) {
+      if (!isIOS && !video.seeking && Math.abs(video.currentTime - easedTime) > 0.02) {
         video.currentTime = easedTime;
       }
  
       if (
-        Math.abs(targetTime - easedTime) > 0.004 ||
-        Math.abs(video.currentTime - easedTime) > 0.02
+        !isIOS &&
+        (Math.abs(targetTime - easedTime) > 0.004 ||
+          Math.abs(video.currentTime - easedTime) > 0.02)
       ) {
         tickFrame = window.requestAnimationFrame(tick);
       }
@@ -344,10 +385,18 @@ export default function Home() {
       const finished = raw >= 1;
       setIntroFinished((current) => (current === finished ? current : finished));
  
-      // 1) video position
-      const duration = video.duration;
-      if (Number.isFinite(duration) && duration > 0) {
-        targetTime = clamp(raw / VIDEO_END) * Math.max(0, duration - 0.05);
+      // 1) video position / iOS playback fallback
+      if (isIOS) {
+        if (iosPlaybackStarted && raw < VIDEO_END) {
+          if (video.paused) video.play().catch(() => {});
+        } else if (raw >= VIDEO_END && !video.paused) {
+          video.pause();
+        }
+      } else {
+        const duration = video.duration;
+        if (Number.isFinite(duration) && duration > 0) {
+          targetTime = clamp(raw / VIDEO_END) * Math.max(0, duration - 0.05);
+        }
       }
  
       // 2) end-of-intro dissolve (drives opacity + a slow push-in)
@@ -365,12 +414,24 @@ export default function Home() {
       if (!scrollFrame) scrollFrame = window.requestAnimationFrame(update);
     };
  
+    const startIOSPlayback = () => {
+      if (!isIOS || iosPlaybackStarted) return;
+      iosPlaybackStarted = true;
+      // Calling play() directly from a touch gesture satisfies iOS's
+      // user-activation requirement for muted inline video.
+      video.play().catch(() => {
+        iosPlaybackStarted = false;
+      });
+    };
+
+    if (isIOS) section.addEventListener("touchstart", startIOSPlayback, { passive: true });
     video.addEventListener("loadedmetadata", onScrollOrResize);
     update();
     window.addEventListener("scroll", onScrollOrResize, { passive: true });
     window.addEventListener("resize", onScrollOrResize);
  
     return () => {
+      if (isIOS) section.removeEventListener("touchstart", startIOSPlayback);
       video.removeEventListener("loadedmetadata", onScrollOrResize);
       window.removeEventListener("scroll", onScrollOrResize);
       window.removeEventListener("resize", onScrollOrResize);
