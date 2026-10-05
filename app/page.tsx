@@ -339,9 +339,13 @@ export default function Home() {
     // iOS Safari/Chrome do not reliably support frequent currentTime seeks
     // while a page is being scrolled. Use gesture-started playback on iOS;
     // desktop and other browsers retain the original scroll-scrub behavior.
+   
+    const isAndroid = /Android/i.test(navigator.userAgent);
+
     const isIOS =
-      /iPad|iPhone|iPod/.test(navigator.userAgent) ||
-      (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+       !isAndroid &&
+       (/iPad|iPhone|iPod/.test(navigator.userAgent) ||
+       (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1));
     let iosPlaybackStarted = false;
 
     let scrollFrame = 0;
