@@ -26,7 +26,10 @@ type Review = {
   customerName: string;
   rating: number;
   review: string;
+  imageUrl?: string | null;
+  videoUrl?: string | null;
   isActive?: boolean;
+  sortOrder?: number;
 };
  
 type Category = {
@@ -1205,9 +1208,15 @@ useEffect(() => {
 </div>
     <div
       ref={introHintRef}
-      className="pointer-events-none absolute bottom-8 left-0 right-0 text-center text-[10px] tracking-[0.3em] text-white/50"
+      className="pointer-events-none absolute inset-0 z-20 flex flex-col items-center justify-center text-center text-white/60"
+      style={{ transition: "opacity 350ms ease" }}
     >
-      SCROLL TO ENTER
+      <span className="mb-3 text-3xl leading-none text-white/70 animate-bounce" aria-hidden="true">
+        ↓
+      </span>
+      <span className="text-[10px] tracking-[0.3em] text-white/55 animate-pulse">
+        SCROLL TO ENTER
+      </span>
     </div>
   </div>
 </section>
@@ -2218,102 +2227,298 @@ useEffect(() => {
 </section>
 
       {/* ===================================================
-          CUSTOMER REVIEWS
-      =================================================== */}
-      <section
-        id="reviews"
-        className="scroll-mt-28 border-t border-white/10 px-6 py-28 sm:px-10 lg:px-16"
-      >
-        <div className="mx-auto max-w-7xl">
-          <p className="heading-font text-4xl font-semibold tracking-wide text-[#9c810c] sm:text-5xl">
-            CUSTOMER REVIEWS
-          </p>
-          <h2 className="heading-font mt-3 text-2xl font-normal tracking-wide text-white sm:text-3xl">
-            Words from our customers.
-          </h2>
-          <p className="mt-4 max-w-2xl text-sm leading-7 text-zinc-400 sm:text-base">
-            Discover what our customers say about their experience at Meenakshi Bridal Studio.
-          </p>
+    CUSTOMER IMAGE REVIEWS
+=================================================== */}
 
-          {/* STAR RATING FILTER */}
-          <div className="mt-8">
-            <p className="mb-4 text-xs font-semibold tracking-[0.25em] text-[#9c810c]">
-              FILTER BY RATING
-            </p>
-            <div className="flex flex-wrap gap-2">
-              {[
-                { label: "All Reviews", value: "ALL" as const },
-                { label: "5 ★", value: 5 },
-                { label: "4 ★", value: 4 },
-                { label: "3 ★", value: 3 },
-                { label: "2 ★", value: 2 },
-                { label: "1 ★", value: 1 },
-              ].map((filter) => (
-                <button
-                  key={String(filter.value)}
-                  type="button"
-                  onClick={() => setReviewRatingFilter(filter.value)}
-                  aria-pressed={reviewRatingFilter === filter.value}
-                  className={`rounded-full border px-5 py-2.5 text-xs font-semibold transition ${
-                    reviewRatingFilter === filter.value
-                      ? "border-[#9c810c] bg-[#9c810c] text-black"
-                      : "border-white/15 bg-[#080808] text-zinc-400 hover:border-[#9c810c] hover:text-[#9c810c]"
-                  }`}
+<section
+  id="reviews"
+  className="scroll-mt-28 border-t border-white/10 px-6 py-28 sm:px-10 lg:px-16"
+>
+  <div className="mx-auto max-w-7xl">
+
+    <p className="heading-font text-4xl font-semibold tracking-wide text-[#9c810c] sm:text-5xl">
+      CUSTOMER REVIEWS
+    </p>
+
+    <h2 className="heading-font mt-3 text-2xl font-normal tracking-wide text-white sm:text-3xl">
+      Words from our customers.
+    </h2>
+
+    <p className="mt-4 max-w-2xl text-sm leading-7 text-zinc-400 sm:text-base">
+      Discover what our customers say about their experience at Meenakshi Bridal Studio.
+    </p>
+
+    {/* STAR FILTER */}
+
+    <div className="mt-8">
+
+      <p className="mb-4 text-xs font-semibold tracking-[0.25em] text-[#9c810c]">
+        FILTER BY RATING
+      </p>
+
+      <div className="flex flex-wrap gap-2">
+
+        {[
+          {
+            label: "All Reviews",
+            value: "ALL" as const,
+          },
+          {
+            label: "5 ★",
+            value: 5,
+          },
+          {
+            label: "4 ★",
+            value: 4,
+          },
+          {
+            label: "3 ★",
+            value: 3,
+          },
+          {
+            label: "2 ★",
+            value: 2,
+          },
+          {
+            label: "1 ★",
+            value: 1,
+          },
+        ].map((filter) => (
+          <button
+            key={String(
+              filter.value
+            )}
+            type="button"
+            onClick={() =>
+              setReviewRatingFilter(
+                filter.value
+              )
+            }
+            aria-pressed={
+              reviewRatingFilter ===
+              filter.value
+            }
+            className={`rounded-full border px-5 py-2.5 text-xs font-semibold transition ${
+              reviewRatingFilter ===
+              filter.value
+                ? "border-[#9c810c] bg-[#9c810c] text-black"
+                : "border-white/15 bg-[#080808] text-zinc-400 hover:border-[#9c810c] hover:text-[#9c810c]"
+            }`}
+          >
+            {filter.label}
+          </button>
+        ))}
+
+      </div>
+    </div>
+
+    {/* IMAGE REVIEW CARDS */}
+
+    {filteredReviews.length >
+    0 ? (
+      <>
+        <div className="mt-10 flex snap-x snap-mandatory gap-6 overflow-x-auto overscroll-x-contain scroll-smooth pb-6 [scrollbar-color:#9c810c_#171717] [scrollbar-width:thin]">
+
+          {filteredReviews.map(
+            (item) => {
+
+              const rating =
+                Math.max(
+                  0,
+                  Math.min(
+                    5,
+                    Number(
+                      item.rating
+                    ) || 0
+                  )
+                );
+
+              return (
+                <article
+                  key={item.id}
+                  className="w-[85vw] max-w-[380px] shrink-0 snap-start overflow-hidden rounded-3xl border border-white/10 bg-[#080808] transition duration-300 hover:-translate-y-1 hover:border-[#9c810c]/60 sm:w-[360px]"
                 >
-                  {filter.label}
-                </button>
-              ))}
-            </div>
-          </div>
 
-          {/* HORIZONTAL SCROLLING REVIEW CARDS */}
-          {filteredReviews.length > 0 ? (
-            <>
-              <div className="mt-10 flex snap-x snap-mandatory gap-6 overflow-x-auto overscroll-x-contain scroll-smooth pb-6 [scrollbar-color:#9c810c_#171717] [scrollbar-width:thin]">
-                {filteredReviews.map((item) => {
-                  const rating = Math.max(0, Math.min(5, Number(item.rating) || 0));
-                  return (
-                    <div
-                      key={item.id}
-                      className="w-[85vw] max-w-[360px] shrink-0 snap-start rounded-3xl border border-white/10 bg-[#080808] p-7 transition duration-300 hover:-translate-y-1 hover:border-[#9c810c]/60 sm:w-[340px]"
-                    >
-                      <div
-                        className="text-xl tracking-widest text-[#9c810c]"
-                        aria-label={`${rating} out of 5 stars`}
-                      >
-                        {"★".repeat(rating)}
-                        <span className="text-zinc-700">
-                          {"★".repeat(5 - rating)}
-                        </span>
-                      </div>
-                      <p className="mt-5 min-h-24 break-words text-sm leading-7 text-zinc-300">
-                        “{item.review}”
-                      </p>
-                      <div className="mt-6 border-t border-white/10 pt-4">
-                        <p className="text-sm font-semibold text-white">
-                          {item.customerName}
-                        </p>
-                        <p className="mt-1 text-xs tracking-wider text-[#9c810c]">
-                          CUSTOMER REVIEW
-                        </p>
-                      </div>
+                  {/* IMAGE */}
+
+                  {item.imageUrl && (
+                    <div className="aspect-[4/3] w-full overflow-hidden bg-black">
+                      <img
+                        src={
+                          item.imageUrl
+                        }
+                        alt={`${item.customerName} customer review`}
+                        className="h-full w-full object-cover transition duration-500 hover:scale-105"
+                      />
                     </div>
-                  );
-                })}
-              </div>
-              <p className="mt-1 text-center text-[10px] tracking-[0.25em] text-zinc-600">
-                ← SCROLL OR SWIPE TO EXPLORE →
-              </p>
-            </>
-          ) : (
-            <p className="mt-10 text-sm text-zinc-500">
-              {reviews.length === 0
-                ? "Customer reviews will appear here soon."
-                : "No reviews found for this rating."}
-            </p>
+                  )}
+
+                  {/* CONTENT */}
+
+                  <div className="p-7">
+
+                    <div
+                      className="text-xl tracking-widest text-[#9c810c]"
+                      aria-label={`${rating} out of 5 stars`}
+                    >
+                      {"★".repeat(
+                        rating
+                      )}
+
+                      <span className="text-zinc-700">
+                        {"★".repeat(
+                          5 - rating
+                        )}
+                      </span>
+                    </div>
+
+                    <p className="mt-5 min-h-24 break-words text-sm leading-7 text-zinc-300">
+                      “{item.review}”
+                    </p>
+
+                    <div className="mt-6 border-t border-white/10 pt-4">
+
+                      <p className="text-sm font-semibold text-white">
+                        {
+                          item.customerName
+                        }
+                      </p>
+
+                      <p className="mt-1 text-xs tracking-wider text-[#9c810c]">
+                        CUSTOMER REVIEW
+                      </p>
+
+                    </div>
+
+                  </div>
+
+                </article>
+              );
+            }
           )}
+
         </div>
-      </section>
+
+        <p className="mt-1 text-center text-[10px] tracking-[0.25em] text-zinc-600">
+          ← SCROLL OR SWIPE TO EXPLORE →
+        </p>
+      </>
+    ) : (
+      <p className="mt-10 text-sm text-zinc-500">
+        {reviews.filter(
+          (review) =>
+            Boolean(
+              review.imageUrl
+            )
+        ).length === 0
+          ? "Customer reviews will appear here soon."
+          : "No reviews found for this rating."}
+      </p>
+    )}
+
+  </div>
+</section>
+
+
+{/* ===================================================
+    CUSTOMER REVIEW VIDEOS
+=================================================== */}
+
+<section
+  id="review-videos"
+  className="border-t border-white/10 px-6 py-28 sm:px-10 lg:px-16"
+>
+  <div className="mx-auto max-w-7xl">
+
+    <p className="heading-font text-4xl font-semibold tracking-wide text-[#9c810c] sm:text-5xl">
+      CUSTOMER REVIEW VIDEOS
+    </p>
+
+    <h2 className="heading-font mt-3 text-2xl font-normal tracking-wide text-white sm:text-3xl">
+      Real experiences from our customers.
+    </h2>
+
+    <p className="mt-4 max-w-2xl text-sm leading-7 text-zinc-400 sm:text-base">
+      Watch real experiences shared by our customers at Meenakshi Bridal Studio.
+    </p>
+
+    {reviews.filter(
+      (review) =>
+        Boolean(
+          review.videoUrl
+        )
+    ).length > 0 ? (
+
+      <>
+
+        <div className="mt-10 flex snap-x snap-mandatory gap-6 overflow-x-auto overscroll-x-contain scroll-smooth pb-6 [scrollbar-color:#9c810c_#171717] [scrollbar-width:thin]">
+
+          {reviews
+            .filter(
+              (review) =>
+                Boolean(
+                  review.videoUrl
+                )
+            )
+            .map((item) => (
+              <article
+                key={`video-${item.id}`}
+                className="w-[78vw] max-w-[360px] shrink-0 snap-start overflow-hidden rounded-3xl border border-white/10 bg-[#080808] transition duration-300 hover:-translate-y-1 hover:border-[#9c810c]/60 sm:w-[330px]"
+              >
+
+                {/* VIDEO */}
+
+                {item.videoUrl && (
+                  <div className="aspect-[9/16] w-full overflow-hidden bg-black">
+
+                    <video
+                      src={
+                        item.videoUrl
+                      }
+                      controls
+                      playsInline
+                      preload="metadata"
+                      className="h-full w-full object-cover"
+                    />
+
+                  </div>
+                )}
+
+                {/* CUSTOMER NAME */}
+
+                <div className="border-t border-white/10 p-6">
+
+                  <p className="text-sm font-semibold text-white">
+                    {
+                      item.customerName
+                    }
+                  </p>
+
+                  <p className="mt-1 text-xs tracking-wider text-[#9c810c]">
+                    CUSTOMER EXPERIENCE
+                  </p>
+
+                </div>
+
+              </article>
+            ))}
+
+        </div>
+
+        <p className="mt-1 text-center text-[10px] tracking-[0.25em] text-zinc-600">
+          ← SCROLL OR SWIPE TO EXPLORE →
+        </p>
+
+      </>
+
+    ) : (
+      <p className="mt-10 text-sm text-zinc-500">
+        Customer review videos will appear here soon.
+      </p>
+    )}
+
+  </div>
+</section>
 
       {/* ===================================================
           CONTACT

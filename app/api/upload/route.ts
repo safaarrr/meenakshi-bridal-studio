@@ -22,14 +22,13 @@ export async function POST(request: Request) {
       );
     }
 
-    if (!["portfolio", "offers"].includes(folderType)) {
+    if (!["portfolio", "offers", "reviews"].includes(folderType)) {
       return NextResponse.json(
         { error: "Invalid upload folder." },
         { status: 400 }
       );
     }
 
-    // Require admin authentication for uploads.
     const cookieStore = await cookies();
     const session = cookieStore.get("admin_session");
 
@@ -40,28 +39,54 @@ export async function POST(request: Request) {
       );
     }
 
-    if (!file.type.startsWith("image/")) {
+    const isVideo = file.type.startsWith("video/");
+    const isImage = file.type.startsWith("image/");
+
+    if (folderType === "reviews" && !isImage && !isVideo) {
+      return NextResponse.json(
+        { error: "Please upload an image or video file." },
+        { status: 400 }
+      );
+    }
+
+    if (folderType !== "reviews" && !isImage) {
       return NextResponse.json(
         { error: "Please upload an image file." },
         { status: 400 }
       );
     }
 
-    const maxSize = 10 * 1024 * 1024;
+    const maxSize = isVideo
+      ? 100 * 1024 * 1024
+      : 10 * 1024 * 1024;
 
     if (file.size > maxSize) {
       return NextResponse.json(
-        { error: "Image must be smaller than 10 MB." },
+        {
+          error: isVideo
+            ? "Video must be smaller than 100 MB."
+            : "Image must be smaller than 10 MB.",
+        },
         { status: 400 }
       );
     }
 
     const buffer = Buffer.from(await file.arrayBuffer());
 
-    const folder =
-      folderType === "offers"
-        ? "meenakshi-bridal-studio/offers"
-        : "meenakshi-bridal-studio/portfolio";
+    let folder = "meenakshi-bridal-studio/portfolio";
+
+    if (folderType === "offers") {
+      folder = "meenakshi-bridal-studio/offers";
+    }
+
+    if (folderType === "reviews") {
+      folder = "meenakshi-bridal-studio/reviews";
+    }
+
+    const resourceType =
+      folderType === "reviews" && isVideo
+        ? "video"
+        : "image";
 
     const uploadResult = await new Promise<{
       secure_url: string;
@@ -71,7 +96,7 @@ export async function POST(request: Request) {
       const uploadStream = cloudinary.uploader.upload_stream(
         {
           folder,
-          resource_type: "image",
+          resource_type: resourceType,
         },
         (error, result) => {
           if (error) {
