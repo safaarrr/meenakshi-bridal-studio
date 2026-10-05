@@ -496,9 +496,9 @@ body::before {
 }
 
 @media (max-width: 768px), (pointer: coarse) {
-  /* No particles on top of the video that is being scrubbed. */
+  /* Keep intro particles visible on mobile */
   .intro-particle-layer {
-    display: none;
+    display: block;
   }
 
   /* Keep the page-wide particles light. */
@@ -507,6 +507,8 @@ body::before {
   }
 
   .particle {
-    box-shadow: 0 0 8px rgba(156, 129, 12, 0.7);
+    box-shadow:
+      0 0 8px rgba(156, 129, 12, 0.7),
+      0 0 18px rgba(156, 129, 12, 0.4);
   }
 }
