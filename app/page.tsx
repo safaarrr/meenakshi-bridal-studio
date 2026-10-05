@@ -1878,7 +1878,7 @@ useEffect(() => {
                   <video
                     src={video}
                     controls
-                    preload="metadata"
+                    preload="none"
                     playsInline
                     className="h-full w-full object-cover"
                   />
