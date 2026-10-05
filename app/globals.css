@@ -31,25 +31,6 @@ body {
   margin: 0;
   min-height: 100vh;
   background-color: #000000;
-  background-image:
-    radial-gradient(
-      ellipse at 15% 20%,
-      rgba(249, 241, 4, 0.10) 0%,
-      transparent 35%
-    ),
-    radial-gradient(
-      ellipse at 85% 45%,
-      rgba(156, 129, 12, 0.13) 0%,
-      transparent 40%
-    ),
-    radial-gradient(
-      ellipse at 50% 90%,
-      rgba(249, 241, 4, 0.07) 0%,
-      transparent 35%
-    );
-  background-attachment: fixed;
-  background-repeat: no-repeat;
-  background-size: cover;
   color: var(--foreground);
   font-family: var(--font-body);
 }
@@ -240,7 +221,6 @@ body {
     transparent 70%
   );
 
-  filter: blur(25px);
   animation: goldGlowLeft 15s ease-in-out infinite alternate;
 }
 
@@ -262,7 +242,6 @@ body {
     transparent 70%
   );
 
-  filter: blur(30px);
   animation: goldGlowRight 18s ease-in-out infinite alternate;
 }
 
@@ -490,17 +469,44 @@ body::before {
   background:
     radial-gradient(
       ellipse at 15% 20%,
-      rgba(249, 241, 4, 0.06),
+      rgba(249, 241, 4, 0.10),
       transparent 35%
     ),
     radial-gradient(
       ellipse at 85% 45%,
-      rgba(156, 129, 12, 0.08),
+      rgba(156, 129, 12, 0.13),
       transparent 40%
     ),
     radial-gradient(
       ellipse at 50% 90%,
-      rgba(249, 241, 4, 0.04),
+      rgba(249, 241, 4, 0.07),
       transparent 35%
     );
+}
+
+/* =========================================================
+   PERFORMANCE — phones and tablets
+========================================================= */
+
+/* The intro already has the page-wide glow behind it; a second copy of the
+   glows inside the pinned video stage only costs GPU time. */
+.intro-particle-layer::before,
+.intro-particle-layer::after {
+  display: none;
+}
+
+@media (max-width: 768px), (pointer: coarse) {
+  /* No particles on top of the video that is being scrubbed. */
+  .intro-particle-layer {
+    display: none;
+  }
+
+  /* Keep the page-wide particles light. */
+  .particle-layer .particle:nth-child(n + 5) {
+    display: none;
+  }
+
+  .particle {
+    box-shadow: 0 0 8px rgba(156, 129, 12, 0.7);
+  }
 }
