@@ -1,4 +1,3 @@
-
 "use client";
  
 import Image from "next/image";
@@ -240,22 +239,14 @@ function Reveal({
     // iOS fallback: reveal from the actual viewport position as the user
     // scrolls, rather than relying only on IntersectionObserver callbacks.
     if (isIOS) {
-      const checkViewport = () => {
+      return watchReveal(() => {
         const rect = el.getBoundingClientRect();
         if (rect.top < window.innerHeight * 0.92 && rect.bottom > 0) {
           setShown(true);
-          window.removeEventListener("scroll", checkViewport);
-          window.removeEventListener("resize", checkViewport);
+          return true;
         }
-      };
-      checkViewport();
-      if (!el || !el.isConnected) return;
-      window.addEventListener("scroll", checkViewport, { passive: true });
-      window.addEventListener("resize", checkViewport);
-      return () => {
-        window.removeEventListener("scroll", checkViewport);
-        window.removeEventListener("resize", checkViewport);
-      };
+        return false;
+      });
     }
 
     const observer = new IntersectionObserver(
@@ -294,6 +285,89 @@ function Reveal({
 }
  
  
+/* =========================================================
+   SHARED REVEAL WATCHER (iOS fallback)
+   One scroll listener + one rAF for ALL Reveal elements, instead of a
+   separate scroll listener (and layout read) per element.
+========================================================= */
+
+const revealWatchers = new Set<() => boolean>();
+let revealFrame = 0;
+let revealListening = false;
+
+function runRevealWatchers() {
+  revealFrame = 0;
+  revealWatchers.forEach((check) => {
+    if (check()) revealWatchers.delete(check);
+  });
+}
+
+function scheduleRevealWatchers() {
+  if (!revealFrame) revealFrame = window.requestAnimationFrame(runRevealWatchers);
+}
+
+function watchReveal(check: () => boolean) {
+  revealWatchers.add(check);
+  if (!revealListening) {
+    revealListening = true;
+    window.addEventListener("scroll", scheduleRevealWatchers, { passive: true });
+    window.addEventListener("resize", scheduleRevealWatchers);
+  }
+  scheduleRevealWatchers();
+  return () => {
+    revealWatchers.delete(check);
+  };
+}
+
+/* =========================================================
+   SLIDESHOW — owns its own timer so the 3-second tick only
+   re-renders this small component, not the whole 3000-line page.
+========================================================= */
+
+function Slideshow({
+  images,
+  getAlt,
+  sizes,
+}: {
+  images: string[];
+  getAlt: (index: number) => string;
+  sizes: string;
+}) {
+  const [active, setActive] = useState(0);
+
+  useEffect(() => {
+    if (images.length <= 1) return;
+    const interval = window.setInterval(() => {
+      setActive((current) => (current + 1) % images.length);
+    }, 3000);
+    return () => window.clearInterval(interval);
+  }, [images.length]);
+
+  return (
+    <>
+      {images.map((image, index) => (
+        <Image
+          key={`${image}-${index}`}
+          src={image}
+          alt={getAlt(index)}
+          fill
+          priority={index === 0}
+          sizes={sizes}
+          className={`object-cover transition-opacity duration-1000 ease-in-out ${
+            index === active ? "opacity-100" : "opacity-0"
+          }`}
+        />
+      ))}
+    </>
+  );
+}
+
+const aboutImages = ["/about.jpeg", "/about2.jpeg", "/about3.jpeg", "/about5.jpeg", "/about6.jpeg"];
+
+// Marquee speed in pixels per second (same on every screen and text length).
+const MARQUEE_SPEED = 100;
+const MARQUEE_CACHE_KEY = "meenakshi-marquee-text";
+
 export default function Home() {
   // Always restart the intro from the top when the page is freshly loaded.
   // Browsers may otherwise restore the previous scroll position on reload,
@@ -319,14 +393,16 @@ export default function Home() {
   const [marqueeEntered, setMarqueeEntered] = useState(false);
 
   // Scroll scrubbing. Everything here writes straight to the DOM (no React
-  // state), so scrolling never triggers a re-render.
+  // state while scrolling).
   //
-  // The pinned section is split in two:
-  //   0 -> VIDEO_END : the video plays with the scroll (eased, not jumpy)
-  //   VIDEO_END -> 1 : the last frame holds while the whole stage dissolves
-  // After that the sticky stage is released and the hero (which is in normal
-  // flow right below) scrolls in and fades up. Nothing is ever fixed-position
-  // and nothing collapses, so the hero can never overlap Services.
+  // Mobile fixes in this version:
+  //  - the loop settles on the TARGET time, never on video.currentTime
+  //    (phones round currentTime to a frame, so comparing against it made the
+  //    old loop re-seek forever = "stuck")
+  //  - one seek in flight at a time + an exact final seek once scrolling stops
+  //  - the video is downloaded fully into memory (blob) so seeks are local
+  //  - phones try /intro3-mobile.mp4 first and fall back to the main file
+  //  - iOS can't auto-play it: any play event is immediately paused
   useEffect(() => {
     const section = introRef.current;
     const stage = introStageRef.current;
@@ -335,29 +411,66 @@ export default function Home() {
     if (!section || !stage || !video) return;
 
     const VIDEO_END = 0.85;
-    const EASE = 0.16; // 0 = never arrives, 1 = instant. ~0.15 feels silky.
+    const EASE = 0.18;
+    const MIN_STEP = 0.012; // seconds - don't re-seek for smaller changes
 
     let scrollFrame = 0;
     let tickFrame = 0;
+    let settleTimer = 0;
     let targetTime = 0;
     let easedTime = 0;
+    let requestedTime = -1;
+    let stickyTop = 0;
+    let distance = 1;
+    let lastFade = -1;
+    let lastHint = -1;
+    let disposed = false;
+    let blobUrl = "";
 
     const clamp = (v: number) => Math.min(1, Math.max(0, v));
+
+    const measure = () => {
+      stickyTop = parseFloat(getComputedStyle(stage).top) || 0;
+      distance = Math.max(
+        1,
+        section.offsetHeight - stage.offsetHeight - stickyTop
+      );
+    };
+
+    const paintHint = () => {
+      if (!hint) return;
+      const raw = clamp(-section.getBoundingClientRect().top / distance);
+      // Visible only at the very top AND only once the video is really back
+      // at the start, so it can never sit on top of a later frame.
+      const opacity = Math.min(1 - clamp(raw / 0.02), 1 - clamp(easedTime / 0.25));
+      if (opacity !== lastHint) {
+        hint.style.opacity = String(opacity);
+        lastHint = opacity;
+      }
+    };
 
     const tick = () => {
       tickFrame = 0;
       const diff = targetTime - easedTime;
       easedTime = Math.abs(diff) < 0.004 ? targetTime : easedTime + diff * EASE;
 
-      // Don't stack seeks while the decoder is still busy with the last one.
-      if (!video.seeking && Math.abs(video.currentTime - easedTime) > 0.02) {
-        video.currentTime = easedTime;
+      let waiting = false;
+      const needsSeek =
+        Math.abs(easedTime - requestedTime) >= MIN_STEP ||
+        (easedTime === targetTime && easedTime !== requestedTime);
+
+      if (needsSeek) {
+        if (video.seeking) {
+          waiting = true; // try again next frame, never stack seeks
+        } else {
+          requestedTime = easedTime;
+          video.currentTime = easedTime;
+        }
       }
 
-      if (
-        Math.abs(targetTime - easedTime) > 0.004 ||
-        Math.abs(video.currentTime - easedTime) > 0.02
-      ) {
+      paintHint();
+
+      if (easedTime !== targetTime || waiting) {
         tickFrame = window.requestAnimationFrame(tick);
       }
     };
@@ -366,67 +479,100 @@ export default function Home() {
       if (!tickFrame) tickFrame = window.requestAnimationFrame(tick);
     };
 
+    const settle = () => {
+      // Scrolling stopped: land exactly on the right frame.
+      easedTime = targetTime;
+      kick();
+    };
+
     const update = () => {
       scrollFrame = 0;
 
-      const stickyTop = parseFloat(getComputedStyle(stage).top) || 0;
-      const distance = Math.max(
-        1,
-        section.offsetHeight - stage.offsetHeight - stickyTop
-      );
       const raw = clamp(-section.getBoundingClientRect().top / distance);
 
-      // Show the offers button only after the intro has fully finished.
-      // It hides again when scrolling back into the intro.
+      // Offers button only after the intro has fully finished.
       const finished = raw >= 1;
       setIntroFinished((current) => (current === finished ? current : finished));
 
-      // 1) video position
       const duration = video.duration;
       if (Number.isFinite(duration) && duration > 0) {
         targetTime = clamp(raw / VIDEO_END) * Math.max(0, duration - 0.05);
       }
 
-      // 2) end-of-intro dissolve (drives opacity + a slow push-in)
       const fade = clamp((raw - VIDEO_END) / (1 - VIDEO_END));
-      stage.style.opacity = String(1 - fade);
-      video.style.transform = `scale(${1 + fade * 0.08})`;
+      if (fade !== lastFade) {
+        stage.style.opacity = String(1 - fade);
+        video.style.transform = fade > 0 ? `scale(${1 + fade * 0.08})` : "none";
+        lastFade = fade;
+      }
 
-      // 3) "scroll to enter" hint disappears as soon as scrolling starts
-      if (hint) hint.style.opacity = String(1 - clamp(raw / 0.05));
-
+      paintHint();
       kick();
+
+      window.clearTimeout(settleTimer);
+      settleTimer = window.setTimeout(settle, 140);
     };
 
-    const onScrollOrResize = () => {
+    const onScroll = () => {
       if (!scrollFrame) scrollFrame = window.requestAnimationFrame(update);
     };
 
-    video.addEventListener("loadedmetadata", onScrollOrResize);
+    const onResize = () => {
+      measure();
+      onScroll();
+    };
+
+    const onPlay = () => video.pause();
+
+    // ---- load the video into memory (phones: smaller file first) ----
+    const small = window.matchMedia("(max-width: 768px), (pointer: coarse)").matches;
+    const candidates = small
+      ? ["/intro3-mobile.mp4", "/intro3-smooth.mp4"]
+      : ["/intro3-smooth.mp4"];
+
+    const loadVideo = async () => {
+      for (const url of candidates) {
+        try {
+          const response = await fetch(url);
+          if (!response.ok) continue;
+          const blob = await response.blob();
+          if (disposed) return;
+          blobUrl = URL.createObjectURL(blob);
+          video.src = blobUrl;
+          video.load();
+          return;
+        } catch {
+          // try the next candidate
+        }
+      }
+      if (!disposed && !video.getAttribute("src")) {
+        video.src = "/intro3-smooth.mp4"; // last resort: plain streaming
+      }
+    };
+
+    video.addEventListener("play", onPlay);
+    video.addEventListener("loadedmetadata", onScroll);
+    video.addEventListener("loadeddata", onScroll);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onResize);
+
+    measure();
     update();
-    window.addEventListener("scroll", onScrollOrResize, { passive: true });
-    window.addEventListener("resize", onScrollOrResize);
+    loadVideo();
 
     return () => {
-      video.removeEventListener("loadedmetadata", onScrollOrResize);
-      window.removeEventListener("scroll", onScrollOrResize);
-      window.removeEventListener("resize", onScrollOrResize);
+      disposed = true;
+      video.removeEventListener("play", onPlay);
+      video.removeEventListener("loadedmetadata", onScroll);
+      video.removeEventListener("loadeddata", onScroll);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onResize);
+      window.clearTimeout(settleTimer);
       if (scrollFrame) window.cancelAnimationFrame(scrollFrame);
       if (tickFrame) window.cancelAnimationFrame(tickFrame);
+      if (blobUrl) URL.revokeObjectURL(blobUrl);
     };
   }, []);
-  const aboutImages = ["/about.jpeg", "/about2.jpeg", "/about3.jpeg","/about5.jpeg","/about6.jpeg"];
-  const [aboutImageIndex, setAboutImageIndex] = useState(0);
- 
-  useEffect(() => {
-    const interval = window.setInterval(() => {
-      setAboutImageIndex((current) => (current + 1) % aboutImages.length);
-    }, 3000);
- 
-    return () => window.clearInterval(interval);
-  }, []);
- 
- 
   const [reviews, setReviews] = useState<Review[]>([]);
   const [reviewRatingFilter, setReviewRatingFilter] = useState<number | "ALL">("ALL");
 
@@ -437,7 +583,6 @@ export default function Home() {
   const [services, setServices] = useState<Service[]>([]);
   const [portfolioImages, setPortfolioImages] = useState<string[]>([]);
   const [portfolioVideos, setPortfolioVideos] = useState<string[]>([]);
-  const [heroImageIndex, setHeroImageIndex] = useState(0);
   const [selectedCategory, setSelectedCategory] =
     useState<string | null>(null);
   const [expandedServiceId, setExpandedServiceId] = useState<number | null>(null);
@@ -493,9 +638,19 @@ export default function Home() {
   useEffect(() => {
     let cancelled = false;
 
+    // Show the last known marquee immediately (no waiting for the API),
+    // then refresh it in the background.
+    try {
+      const cached = window.localStorage.getItem(MARQUEE_CACHE_KEY);
+      if (cached) {
+        setMarqueeText(cached);
+        setMarqueeVisible(true);
+      }
+    } catch {
+      // storage unavailable (private mode) - ignore
+    }
+
     async function loadMarquee() {
-      // The API/database can take a moment to respond on the first visit.
-      // Retry briefly so the marquee does not require a page reload.
       for (let attempt = 0; attempt < 4; attempt += 1) {
         try {
           const response = await fetch("/api/marquee", {
@@ -514,28 +669,30 @@ export default function Home() {
           if (cancelled) return;
 
           if (activeMarquee) {
-            setMarqueeText(String(activeMarquee.text));
+            const text = String(activeMarquee.text);
+            setMarqueeText(text);
             setMarqueeVisible(true);
+            try {
+              window.localStorage.setItem(MARQUEE_CACHE_KEY, text);
+            } catch {}
             return;
           }
 
-          // Retry empty/inactive responses too, in case the API is still
-          // warming up. Stop after the final attempt.
           if (attempt === 3) {
             setMarqueeVisible(false);
+            try {
+              window.localStorage.removeItem(MARQUEE_CACHE_KEY);
+            } catch {}
             return;
           }
         } catch (error) {
           if (attempt === 3) {
-            if (!cancelled) {
-              console.error("Marquee loading error:", error);
-              setMarqueeVisible(false);
-            }
-            return;
+            if (!cancelled) console.error("Marquee loading error:", error);
+            return; // keep showing the cached marquee if there is one
           }
         }
 
-        await new Promise((resolve) => window.setTimeout(resolve, 600));
+        await new Promise((resolve) => window.setTimeout(resolve, 400));
         if (cancelled) return;
       }
     }
@@ -548,25 +705,59 @@ export default function Home() {
   // Show the floating Offers button only once the marquee has reached its
   // sticky position below the navbar. It hides again when scrolling upward.
   useEffect(() => {
-    const updateMarqueePosition = () => {
+    let frame = 0;
+    let stickyTop = 0;
+
+    const run = () => {
+      frame = 0;
       const marquee = marqueeRef.current;
       if (!marquee || !introFinished || !marqueeVisible) {
         setMarqueePinned(false);
         return;
       }
-
-      const stickyTop = parseFloat(getComputedStyle(marquee).top) || 0;
       setMarqueePinned(marquee.getBoundingClientRect().top <= stickyTop + 1);
     };
 
-    updateMarqueePosition();
-    window.addEventListener("scroll", updateMarqueePosition, { passive: true });
-    window.addEventListener("resize", updateMarqueePosition);
+    const schedule = () => {
+      if (!frame) frame = window.requestAnimationFrame(run);
+    };
+
+    const measure = () => {
+      const marquee = marqueeRef.current;
+      stickyTop = marquee ? parseFloat(getComputedStyle(marquee).top) || 0 : 0;
+      schedule();
+    };
+
+    measure();
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("resize", measure);
     return () => {
-      window.removeEventListener("scroll", updateMarqueePosition);
-      window.removeEventListener("resize", updateMarqueePosition);
+      if (frame) window.cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", schedule);
+      window.removeEventListener("resize", measure);
     };
   }, [introFinished, marqueeVisible, marqueeText]);
+
+  // Constant marquee speed: the duration is derived from the real text width
+  // (short text used to crawl, because the old duration was a fixed 24s).
+  const marqueeTrackRef = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    const track = marqueeTrackRef.current;
+    const group = track?.firstElementChild as HTMLElement | null;
+    if (!track || !group) return;
+
+    const apply = () => {
+      const width = group.getBoundingClientRect().width;
+      if (width > 0) {
+        // the track holds 8 groups and animates by -50% = 4 groups
+        track.style.animationDuration = `${(width * 4) / MARQUEE_SPEED}s`;
+      }
+    };
+
+    apply();
+    window.addEventListener("resize", apply);
+    return () => window.removeEventListener("resize", apply);
+  }, [marqueeVisible, marqueeText]);
 
   // Reveal the marquee and hero as they enter the viewport after the intro.
   // This is separate from the video scroll-scrubbing effect above.
@@ -665,18 +856,6 @@ export default function Home() {
     loadPortfolio();
   }, []);
 
-  // HERO PORTFOLIO SLIDESHOW
-useEffect(() => {
-  if (portfolioImages.length <= 1) return;
-
-  const interval = window.setInterval(() => {
-    setHeroImageIndex((current) =>
-      (current + 1) % portfolioImages.length
-    );
-  }, 3000);
-
-  return () => window.clearInterval(interval);
-}, [portfolioImages.length]);
 
   /* =======================================================
      LOAD CUSTOMER REVIEWS
@@ -928,7 +1107,7 @@ useEffect(() => {
     NAVBAR
 =================================================== */}
  
-<header className="fixed left-0 right-0 top-0 z-50 border-b border-white/10 bg-black/90 backdrop-blur-xl">
+<header className="fixed left-0 right-0 top-0 z-50 border-b border-white/10 bg-black/90 md:backdrop-blur-xl">
  
   <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-3 sm:px-8 lg:px-10">
  
@@ -1162,11 +1341,12 @@ useEffect(() => {
   >
     <video
       ref={introVideoRef}
-      src="/intro3-smooth.mp4"
       muted
       playsInline
       preload="auto"
       controls={false}
+      disablePictureInPicture
+      disableRemotePlayback
       aria-label="Meenakshi brand introduction video"
       className="h-full w-full object-contain will-change-transform"
       style={{ display: "block" }}
@@ -1241,7 +1421,7 @@ useEffect(() => {
         padding-right: 2rem;
       }
     `}</style>
-    <div className="meenakshi-marquee-track">
+    <div ref={marqueeTrackRef} className="meenakshi-marquee-track">
       {Array.from({ length: 8 }).map((_, index) => (
         <div
           className="meenakshi-marquee-group"
@@ -1366,21 +1546,11 @@ useEffect(() => {
       <div className="relative aspect-[4/5] overflow-hidden rounded-[1.5rem] border border-[#9c810c]/30 bg-[#0b0b0b]">
  
       {portfolioImages.length > 0 ? (
-  portfolioImages.map((image, index) => (
-    <Image
-      key={`${image}-${index}`}
-      src={image}
-      alt={`Meenakshi Bridal Studio portfolio image ${index + 1}`}
-      fill
-      priority={index === 0}
-      sizes="(max-width: 1024px) 90vw, 45vw"
-      className={`object-cover transition-opacity duration-1000 ease-in-out ${
-        index === heroImageIndex
-          ? "opacity-100"
-          : "opacity-0"
-      }`}
-    />
-  ))
+  <Slideshow
+    images={portfolioImages}
+    getAlt={(index) => `Meenakshi Bridal Studio portfolio image ${index + 1}`}
+    sizes="(max-width: 1024px) 90vw, 45vw"
+  />
 ) : (
   <div className="flex h-full flex-col items-center justify-center px-8 text-center">
     <span className="heading-font text-4xl text-[#9c810c]">
@@ -1973,19 +2143,11 @@ useEffect(() => {
           <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
             <div className="relative">
               <div className="relative aspect-[4/5] overflow-hidden rounded-[2rem] border border-white/10 bg-transparent">
-                {aboutImages.map((src, index) => (
-                  <Image
-                    key={src}
-                    src={src}
-                    alt="Meenakshi Bridal Studio and Family Salon"
-                    fill
-                    priority={index === 0}
-                    sizes="(max-width: 1024px) 100vw, 50vw"
-                    className={`object-cover transition-opacity duration-1000 ease-in-out ${
-                      index === aboutImageIndex ? "opacity-100" : "opacity-0"
-                    }`}
-                  />
-                ))}
+                <Slideshow
+                  images={aboutImages}
+                  getAlt={() => "Meenakshi Bridal Studio and Family Salon"}
+                  sizes="(max-width: 1024px) 100vw, 50vw"
+                />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
                 <div className="absolute bottom-7 left-7">
                   <p className="text-xs tracking-[0.3em] text-[#f9f104]">
@@ -2935,4 +3097,3 @@ useEffect(() => {
     </main>
   );
 }
- 
