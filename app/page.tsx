@@ -333,112 +333,81 @@ export default function Home() {
     const video = introVideoRef.current;
     const hint = introHintRef.current;
     if (!section || !stage || !video) return;
- 
+
     const VIDEO_END = 0.85;
     const EASE = 0.16; // 0 = never arrives, 1 = instant. ~0.15 feels silky.
-    // iOS Safari/Chrome do not reliably support frequent currentTime seeks
-    // while a page is being scrolled. Use gesture-started playback on iOS;
-    // desktop and other browsers retain the original scroll-scrub behavior.
-   
-    const isAndroid = /Android/i.test(navigator.userAgent);
-
-    const isIOS =
-       !isAndroid &&
-       (/iPad|iPhone|iPod/.test(navigator.userAgent) ||
-       (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1));
-    let iosPlaybackStarted = false;
 
     let scrollFrame = 0;
     let tickFrame = 0;
     let targetTime = 0;
     let easedTime = 0;
- 
+
     const clamp = (v: number) => Math.min(1, Math.max(0, v));
- 
+
     const tick = () => {
       tickFrame = 0;
       const diff = targetTime - easedTime;
       easedTime = Math.abs(diff) < 0.004 ? targetTime : easedTime + diff * EASE;
- 
+
       // Don't stack seeks while the decoder is still busy with the last one.
-      if (!isIOS && !video.seeking && Math.abs(video.currentTime - easedTime) > 0.02) {
+      if (!video.seeking && Math.abs(video.currentTime - easedTime) > 0.02) {
         video.currentTime = easedTime;
       }
- 
+
       if (
-        !isIOS &&
-        (Math.abs(targetTime - easedTime) > 0.004 ||
-          Math.abs(video.currentTime - easedTime) > 0.02)
+        Math.abs(targetTime - easedTime) > 0.004 ||
+        Math.abs(video.currentTime - easedTime) > 0.02
       ) {
         tickFrame = window.requestAnimationFrame(tick);
       }
     };
- 
+
     const kick = () => {
       if (!tickFrame) tickFrame = window.requestAnimationFrame(tick);
     };
- 
+
     const update = () => {
       scrollFrame = 0;
- 
+
       const stickyTop = parseFloat(getComputedStyle(stage).top) || 0;
       const distance = Math.max(
         1,
         section.offsetHeight - stage.offsetHeight - stickyTop
       );
       const raw = clamp(-section.getBoundingClientRect().top / distance);
+
       // Show the offers button only after the intro has fully finished.
       // It hides again when scrolling back into the intro.
       const finished = raw >= 1;
       setIntroFinished((current) => (current === finished ? current : finished));
- 
-      // 1) video position / iOS playback fallback
-      if (isIOS) {
-        if (iosPlaybackStarted && raw < VIDEO_END) {
-          if (video.paused) video.play().catch(() => {});
-        } else if (raw >= VIDEO_END && !video.paused) {
-          video.pause();
-        }
-      } else {
-        const duration = video.duration;
-        if (Number.isFinite(duration) && duration > 0) {
-          targetTime = clamp(raw / VIDEO_END) * Math.max(0, duration - 0.05);
-        }
+
+      // 1) video position
+      const duration = video.duration;
+      if (Number.isFinite(duration) && duration > 0) {
+        targetTime = clamp(raw / VIDEO_END) * Math.max(0, duration - 0.05);
       }
- 
+
       // 2) end-of-intro dissolve (drives opacity + a slow push-in)
       const fade = clamp((raw - VIDEO_END) / (1 - VIDEO_END));
       stage.style.opacity = String(1 - fade);
       video.style.transform = `scale(${1 + fade * 0.08})`;
- 
+
       // 3) "scroll to enter" hint disappears as soon as scrolling starts
       if (hint) hint.style.opacity = String(1 - clamp(raw / 0.05));
- 
+
       kick();
     };
- 
+
     const onScrollOrResize = () => {
       if (!scrollFrame) scrollFrame = window.requestAnimationFrame(update);
     };
- 
-    const startIOSPlayback = () => {
-      if (!isIOS || iosPlaybackStarted) return;
-      iosPlaybackStarted = true;
-      // Calling play() directly from a touch gesture satisfies iOS's
-      // user-activation requirement for muted inline video.
-      video.play().catch(() => {
-        iosPlaybackStarted = false;
-      });
-    };
 
-    if (isIOS) section.addEventListener("touchstart", startIOSPlayback, { passive: true });
     video.addEventListener("loadedmetadata", onScrollOrResize);
     update();
     window.addEventListener("scroll", onScrollOrResize, { passive: true });
     window.addEventListener("resize", onScrollOrResize);
- 
+
     return () => {
-      if (isIOS) section.removeEventListener("touchstart", startIOSPlayback);
       video.removeEventListener("loadedmetadata", onScrollOrResize);
       window.removeEventListener("scroll", onScrollOrResize);
       window.removeEventListener("resize", onScrollOrResize);
